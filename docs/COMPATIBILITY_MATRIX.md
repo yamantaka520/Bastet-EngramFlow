@@ -1,0 +1,49 @@
+# Compatibility Matrix
+
+此文件是 Bastet-EngramFlow 的唯一相容性矩陣來源。只有具有真實 contract/integration/E2E 證據的組合可以標記 Supported。
+
+## 狀態定義
+
+- **TBD**：尚未 pin 或測試。
+- **Experimental**：已有初步測試，不構成 release guarantee。
+- **Supported**：已通過 release gate 與必要 contract/E2E tests。
+- **Unsupported**：已知不相容或明確不支援。
+
+## Runtime matrix
+
+| Component | Version / Commit | Interface | Status | Evidence |
+|---|---|---|---|---|
+| AgentMemoryOS | TBD | native adapter | TBD | source-first assessment pending |
+| Hermes Agent | TBD pinned tag/commit | adapter seam TBD | TBD | source-first assessment pending |
+| Hermes Agent latest tag | TBD | compatibility lane | TBD | CI pending |
+| Hermes Agent main | moving | early-warning only | Experimental | non-release-gating lane pending |
+
+## MCP matrix
+
+| Component | Implementation Version | Official Protocol Version | Transport | Auth | Status | Evidence |
+|---|---|---|---|---|---|---|
+| AgentMemoryOS MCP | `>=2.0.0`（需求，定義待確認） | date version TBD | TBD | TBD | TBD | owner decision + E2E pending |
+| EngramFlow MCP adapter | semantic version TBD | date version TBD | TBD | TBD | TBD | contract tests pending |
+| Hermes MCP client | pinned Hermes version TBD | date version TBD | stdio | local | TBD | contract test pending |
+| Hermes MCP client | pinned Hermes version TBD | date version TBD | HTTP | OAuth/bearer/mTLS TBD | TBD | contract test pending |
+
+## Language / dependency matrix
+
+| Item | Range | Status | Evidence |
+|---|---|---|---|
+| Python | proposed `>=3.11` | TBD | ADR pending |
+| AgentMemoryOS SDK | TBD with explicit upper bound | TBD | clean-env resolution pending |
+| Hermes adapter dependency | pinned/compatible range TBD | TBD | import + contract tests pending |
+
+## Promotion rule
+
+將任何列從 TBD/Experimental 升級為 Supported 前，必須記錄：
+
+1. exact version/tag/commit；
+2. clean environment dependency resolution；
+3. focused contract tests；
+4. required integration/E2E tests；
+5. known limitations；
+6. evidence URL 或 artifact reference。
+
+`main`/nightly 僅作 drift early warning，不會自動成為 production support promise。
