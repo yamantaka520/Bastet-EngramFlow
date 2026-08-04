@@ -8,7 +8,7 @@
 
 - AgentMemoryOS 記憶內容、ACL、provenance 與 resonance score
 - ActionProposal、approval、policy 與 audit lineage
-- Hermes execution identity、tool capability 與 task state
+- Agent Runtime execution identity、adapter/runtime version、tool capability、workspace 與 task state
 - credentials、tokens、keys 與 external service permissions
 - verification artifacts 與 feedback records
 - project/user isolation boundary
@@ -18,7 +18,7 @@
 1. 外部事件／內容 → Trigger Gateway
 2. AgentMemoryOS → EngramFlow adapter
 3. LLM-generated association → deterministic policy
-4. Policy Gateway → Hermes execution runtime
+4. Policy Gateway → Runtime Router → selected Agent Runtime
 5. Worker self-report → independent verifier
 6. EngramFlow feedback → AgentMemoryOS
 7. Runtime → external systems
@@ -81,6 +81,18 @@
 - 控制：rate limit、cooldown、budget、depth limit、kill switch。
 - 測試：burst 與 feedback loop 被限流且不繞過 audit。
 
+### Cross-runtime workspace corruption
+
+- 威脅：一個 Agent timeout/失敗後，另一個 Agent 在未驗證的 dirty workspace 繼續修改，造成覆蓋、重複副作用或來源不明的 artifact。
+- 控制：per-run worktree/sandbox、base commit binding、artifact manifest、fallback 前 read-back、禁止盲目共用 vendor session。
+- 測試：workspace-write fallback 必須取得乾淨隔離 workspace；dirty state 未被明確採納時 fail closed。
+
+### Runtime capability spoofing
+
+- 威脅：adapter 或 runtime 宣稱支援 cancel、sandbox、tool restriction 等能力，但實際無法強制。
+- 控制：pinned version、capability contract tests、effective permission intersection、Experimental/Supported promotion gate。
+- 測試：每個 Supported capability 必須有真實 probe；probe 失敗時 runtime 不得被 Router 選用於要求該能力的任務。
+
 ## 4. High-risk default policy
 
 Production writes、deletion、payment、permission changes、credential operations、public posting 與 service-wide restart 預設要求人工批准；critical 類別預設禁止自動執行。
@@ -88,7 +100,7 @@ Production writes、deletion、payment、permission changes、credential operati
 ## 5. Residual risks / TBD
 
 - AgentMemoryOS 的實際 ACL 與 provenance contract 尚未取得。
-- Hermes integration identity 與 sandbox boundary 尚未選定。
+- 各 Agent Runtime integration identity、workspace 與 sandbox boundary 尚未逐一選定。
 - MCP 版本／transport／auth baseline 尚未 ADR。
 - retention、privacy jurisdiction 與 incident owner 尚未定案。
 

@@ -19,6 +19,8 @@
 7. 檢查 diff、secret scan、dependency 與文件。
 8. 建立 PR，附上真實驗證輸出。
 
+所有變更必須先確認對應 `GOAL-*`、`STAGE-*` 與 `PLAN-*`；詳細規則見 `docs/GOVERNANCE.md` 與 `docs/TRACEABILITY.md`。若目前 active plan 不涵蓋該工作，應先更新或新增 plan，不可讓實作脫離治理鏈。
+
 ## Commit convention
 
 ```text
@@ -37,6 +39,8 @@ chore: configure CI checks
 - [ ] 不含 secrets 或本機絕對 credential paths
 - [ ] Contract/schema 版本已更新
 - [ ] `docs/COMPATIBILITY_MATRIX.md` 已更新
+- [ ] `docs/PROJECT_STATUS.md` 與相關 Goal/Stage/Plan 已更新
+- [ ] ADR/Evidence/Review 已依治理規則建立或更新
 - [ ] Verification evidence 已附上
 - [ ] Rollback / disable path 已說明
 

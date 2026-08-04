@@ -1,14 +1,14 @@
 # Bastet-EngramFlow 專案計畫
 
-- 文件版本：`0.1.0-draft`
-- 更新時間：2026-08-05 01:42 CST（UTC+8）
-- 專案狀態：Planning
+- 文件版本：`0.2.0-draft`
+- 更新時間：2026-08-05 07:25 CST（UTC+8）
+- 專案狀態：Active development / STAGE-000
 - Repository：`yamantaka520/Bastet-EngramFlow`
 - 授權：Apache-2.0
 
 ## 1. 專案摘要
 
-Bastet-EngramFlow 是 AgentMemoryOS 與 Hermes Agent 之間的主動式聯想執行層。它將分級記憶與「記憶共鳴」轉換成帶證據的行動提案，再由可稽核的政策層決定是否拒絕、等待批准、進入 shadow mode，或交由 Hermes 的既有工具／任務 runtime 執行。
+Bastet-EngramFlow 是 AgentMemoryOS 與可插拔 Agent Runtime 之間的主動式聯想、治理與驗證層。它將分級記憶與「記憶共鳴」轉換成帶證據的行動提案，再由可稽核的政策層決定是否拒絕、等待批准、進入 shadow mode，或交由 Hermes Agent、Claude Code、OpenAI Codex、AGY/Antigravity CLI、Grok Build 等 runtime 執行。
 
 核心流程：
 
@@ -23,7 +23,7 @@ Structured ActionProposal
   ↓
 Policy / risk / dedup / cooldown / budget / approval
   ↓
-Hermes execution runtime
+Runtime Router → selected Agent Runtime
   ↓
 Independent verification
   ↓
@@ -46,7 +46,7 @@ Outcome feedback to AgentMemoryOS
 
 ### 3.1 願景
 
-建立一個可插拔、可驗證、可逐步提升自治程度的 Memory Resonance Runtime，使 AgentMemoryOS 的記憶能力能安全地驅動 Hermes Agent 的任務執行能力。
+建立一個可插拔、可驗證、可逐步提升自治程度的 Memory Resonance Runtime，使 AgentMemoryOS 的記憶能力能安全地驅動多種 Agent Runtime 的任務執行能力。
 
 ### 3.2 MVP 目標
 
@@ -55,17 +55,17 @@ Outcome feedback to AgentMemoryOS
 - 產生符合 schema 的 `ActionProposal`。
 - 執行政策判定：風險、重複、冷卻、預算、授權與作用域。
 - 在 shadow mode 完整記錄「若開放自動化會做什麼」。
-- 將低風險、允許的工作提交給 Hermes。
+- 將低風險、允許的工作依 capability 與 policy 提交給適合的 Agent Runtime。
 - 由獨立 verifier 檢查 artifact、exit status 或 read-back state。
 - 將結果與品質指標回寫 AgentMemoryOS。
 
 ### 3.3 非目標
 
-- 不重寫 Hermes conversation loop 或完整 tool runtime。
+- 不重寫任何 vendor 的 conversation loop 或完整 tool runtime。
 - 不讓 AgentMemoryOS 直接執行 production 副作用。
 - 不以模型自評作為唯一完成證據。
 - MVP 不開放付款、刪除、權限變更、production write 或公開發布的無人批准自動化。
-- 不在第一階段建立大型通用 workflow engine；優先使用 Hermes 現有 queue、Kanban、cron、webhook 與工具能力。
+- 不在第一階段建立大型通用 workflow engine；優先重用各 runtime 已存在的 durable task、SDK、MCP/ACP、hook 與 structured CLI 能力。
 
 ## 4. 成功指標
 
@@ -103,7 +103,7 @@ Outcome feedback to AgentMemoryOS
 
 ### 5.4 任務延續
 
-從未完成目標、blocked reason 與新事件判斷工作是否可恢復，並建立帶上下文與驗收條件的 Hermes task。
+從未完成目標、blocked reason 與新事件判斷工作是否可恢復，並建立帶上下文與驗收條件的 vendor-neutral execution task，再交由 Runtime Router 選擇 Agent。
 
 ## 6. 功能需求
 
@@ -114,7 +114,7 @@ Outcome feedback to AgentMemoryOS
 - 使用者明示請求
 - webhook/event
 - cron/schedule
-- Hermes lifecycle event
+- Agent Runtime lifecycle event
 - AgentMemoryOS resonance threshold event
 
 所有 trigger 必須具有來源、時間、作用域、correlation ID 與 payload digest。
@@ -170,12 +170,14 @@ origin_version: string
 
 政策輸出必須包含 machine-readable decision code 與 human-readable reason。
 
-### FR-05 Hermes execution adapter
+### FR-05 Agent Runtime SPI、routing 與 execution adapters
 
-- 優先透過穩定 API、plugin、MCP、webhook、CLI/JSON 或 durable task contract 整合。
-- 避免直接寫入 Hermes 內部 database。
-- 將 proposal 轉成 bounded task，攜帶 acceptance criteria、timeout 與允許 toolsets。
-- 儲存 Hermes task/session/run ID，支援 cancel、timeout 與 retry policy。
+- Core 定義 vendor-neutral runtime descriptor、capabilities、task、handle、status 與 error contract。
+- 優先透過 native SDK/API，其次正式 MCP/ACP seam，再其次 structured CLI 整合；純文字 CLI 僅能作 Experimental bridge。
+- 避免直接寫入任何 runtime 的內部 database 或 session store。
+- 將 proposal 轉成 bounded task，攜帶 acceptance criteria、timeout、workspace、budget 與允許 capabilities。
+- 儲存 adapter/runtime version 與 task/session/process/run ID，支援能力可用時的 cancel、timeout 與 retry policy。
+- Runtime Router 依 capability、health、policy、cost 與 workspace isolation 選擇 runtime；不可用版本字串猜測能力。
 - `worker_reported_done` 不得直接轉成 `verified`。
 
 ### FR-06 Independent verification
@@ -232,7 +234,7 @@ Verifier 不得只重述 worker 的文字結果。
 
 - 避免 hard-coded home path、profile path 或單一主機配置。
 - 使用 environment variables 與設定檔。
-- 對 Hermes upstream 採 thin adapter 與 compatibility matrix。
+- 對所有 Agent Runtime 採 thin adapter 與 compatibility matrix。
 
 ### 7.4 Observability
 
@@ -245,9 +247,10 @@ Verifier 不得只重述 worker 的文字結果。
 1. **Cognitive Layer / AgentMemoryOS**：記憶檢索、分級、共鳴、候選關聯。
 2. **Proposal Layer / EngramFlow**：結構化提案，不執行工具。
 3. **Policy Layer / EngramFlow**：風險、預算、授權、去重與 idempotency。
-4. **Execution Layer / Hermes**：durable task 與工具執行。
-5. **Verification Layer / EngramFlow**：獨立驗證。
-6. **Feedback Layer / AgentMemoryOS**：記錄結果並調整未來聯想。
+4. **Routing Layer / EngramFlow**：依 capabilities、policy 與 workspace 安全選擇 runtime。
+5. **Execution Layer / Agent Runtime**：由 Hermes、Claude Code、Codex、AGY、Grok Build 等執行 bounded task。
+6. **Verification Layer / EngramFlow**：獨立驗證。
+7. **Feedback Layer / AgentMemoryOS**：記錄結果並調整未來聯想。
 
 詳細內容見 [ARCHITECTURE.md](ARCHITECTURE.md)。
 
@@ -262,8 +265,16 @@ bastet-engramflow/
 │   ├── resonance/
 │   ├── proposals/
 │   ├── policy/
-│   ├── hermes_adapter/
-│   ├── mcp_adapter/
+│   ├── routing/
+│   ├── runtimes/
+│   │   ├── hermes/
+│   │   ├── claude_code/
+│   │   ├── codex/
+│   │   ├── agy/
+│   │   └── grok_build/
+│   ├── protocols/
+│   │   ├── mcp/
+│   │   └── acp/
 │   ├── verification/
 │   ├── feedback/
 │   └── observability/
@@ -301,12 +312,12 @@ observed
 
 交付：
 
-- pin AgentMemoryOS 與 Hermes source/version/license
+- pin AgentMemoryOS 與各目標 runtime 的 source/version/license
 - extension point 與 capability gap matrix
 - schema v1
 - threat model
 - MCP 版本定義
-- ADR：語言、儲存、event transport、Hermes integration seam
+- ADR：語言、儲存、event transport、Agent Runtime SPI 與 adapter seam
 
 完成條件：所有未決技術假設有 owner，核心 contract 可驗證。
 
@@ -329,7 +340,7 @@ observed
 
 交付：
 
-- Hermes durable execution adapter
+- 至少一個 production candidate runtime adapter
 - independent verifier
 - retry/timeout/cancel
 - MCP contract tests
@@ -366,14 +377,14 @@ observed
 ### Contract tests
 
 - AgentMemoryOS retrieval/resonance response
-- Hermes task submission/status/cancel
+- Agent Runtime task submission/status/cancel/capability discovery
 - MCP discovery/call/error mapping
 - verifier artifact/read-back contract
 
 ### Integration tests
 
 - trigger → proposal → policy → shadow audit
-- approved low-risk proposal → Hermes sandbox → verifier → feedback
+- approved low-risk proposal → selected runtime sandbox → verifier → feedback
 - timeout/retry/duplicate/network failure
 
 ### Security tests
@@ -386,9 +397,9 @@ observed
 
 ### Compatibility tests
 
-- pinned supported Hermes release
-- latest supported tag
-- upstream main 作為 early-warning lane
+- 每個 pinned Supported runtime release
+- 每個 runtime latest supported tag
+- 各 runtime upstream main/nightly 作為 early-warning lane
 - supported MCP compatibility matrix
 
 ## 13. CI/CD Gate
@@ -421,7 +432,7 @@ Rollback 以停用 proposal consumption / action class 為第一選擇，不依�
 - **Duplicate action**：idempotency key、dedup window、external read-back。
 - **Privilege escalation**：capability allowlist、separate execution identity、policy tests。
 - **Prompt injection**：untrusted content 標記、deterministic policy、tool scope 限制。
-- **Hermes upstream drift**：thin adapter、pinned versions、compatibility CI。
+- **Agent runtime drift**：thin adapters、pinned versions、capability detection、compatibility CI。
 - **MCP version ambiguity**：先定義 compatibility contract，不以「2.0」猜測官方 protocol version。
 - **Self-reported success**：獨立 verifier 與 evidence requirement。
 - **Memory poisoning**：provenance、ACL、confidence、correction history、append-only feedback。
@@ -434,7 +445,7 @@ Rollback 以停用 proposal consumption / action class 為第一選擇，不依�
 2. 「MCP 2.0+」實際指 project adapter semantic version、某個 MCP server 產品版本，或 JSON-RPC 2.0。
 3. 首個支援的 MCP protocol date/version 與 transports。
 4. MVP persistence：SQLite、PostgreSQL 或既有 AgentMemoryOS store。
-5. Hermes integration seam：plugin、MCP、webhook 或 task API。
+5. 各 Agent Runtime 首選 integration seam、最低 capability 與支援等級。
 6. 部署拓樸與 production owner。
 7. 預算與風險閾值。
 8. memory resonance scoring 與 feedback learning 規則。
@@ -453,10 +464,10 @@ Rollback 以停用 proposal consumption / action class 為第一選擇，不依�
 
 ## 18. 下一個工程 Sprint
 
-1. 匯入／pin AgentMemoryOS 與 Hermes 的真實介面資料。
-2. 建立 capability gap matrix。
-3. 定義 JSON Schema / Pydantic contracts。
-4. 建立最小 append-only audit store。
-5. 實作 deterministic policy baseline。
+1. 完成 `PLAN-001` 文件治理與 runtime-neutral SPI。
+2. 建立 Hermes、Claude Code、Codex、AGY、Grok Build capability gap matrix。
+3. 匯入／pin AgentMemoryOS 與第一批 runtime 的真實介面資料。
+4. 定義 JSON Schema / Python contracts 與 Agent Context Bundle。
+5. 建立最小 append-only audit store與 deterministic policy baseline。
 6. 建立 trigger → proposal → shadow audit 的第一個 E2E 測試。
 7. 確認並測試「MCP 2.0+」的具體版本定義。

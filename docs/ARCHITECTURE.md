@@ -2,7 +2,7 @@
 
 ## 1. 架構目標
 
-Bastet-EngramFlow 的核心責任是把 AgentMemoryOS 的記憶／共鳴結果轉為「可治理、可執行、可驗證」的工作，而不是取代 AgentMemoryOS 或 Hermes Agent。
+Bastet-EngramFlow 的核心責任是把 AgentMemoryOS 的記憶／共鳴結果轉為「可治理、可執行、可驗證」的工作，而不是取代 AgentMemoryOS 或任何 Agent Runtime。
 
 ```mermaid
 flowchart LR
@@ -12,8 +12,17 @@ flowchart LR
     P --> G[Policy Gateway]
     G -->|Reject| A[Audit]
     G -->|Shadow| S[Shadow Review]
-    G -->|Approve| H[Hermes Adapter]
-    H --> E[Hermes Execution Runtime]
+    G -->|Approve| X[Runtime Router]
+    X --> H[Hermes Adapter]
+    X --> C[Claude Code Adapter]
+    X --> O[Codex Adapter]
+    X --> Y[AGY Adapter]
+    X --> K[Grok Build Adapter]
+    H --> E[Bounded Execution]
+    C --> E
+    O --> E
+    Y --> E
+    K --> E
     E --> V[Independent Verifier]
     V --> F[Feedback Adapter]
     F --> M
@@ -54,13 +63,15 @@ Policy Gateway 必須在 LLM/tool 執行之前做 deterministic gate：
 
 LLM 可提供分類建議，但不可自行繞過 deterministic policy。
 
-### 2.5 Hermes Adapter
+### 2.5 Runtime Router 與 Agent Runtime Adapters
 
-- 把 approved proposal 轉為 bounded execution task。
-- 優先使用 Hermes plugin、MCP、webhook、CLI/JSON 或 durable task API。
-- 封裝所有 Hermes upstream-specific imports。
-- 記錄 task/session/run IDs。
-- 限制 toolsets、timeout、工作目錄與批准範圍。
+- 把 approved proposal 轉為 vendor-neutral bounded execution task。
+- 依 capability、health、cost、trust、workspace isolation 與 policy 選擇 runtime。
+- 優先使用 native SDK/API，其次正式 MCP/ACP seam，再其次 structured CLI；純文字 CLI 僅能作 Experimental bridge。
+- 封裝所有 Hermes、Claude Code、Codex、AGY、Grok Build 等 vendor-specific imports。
+- 記錄 adapter/runtime version、task/session/process/run IDs 與實際 capabilities。
+- 限制 tools、timeout、工作目錄、sandbox、budget 與批准範圍。
+- 不假設不同 runtime 的原生 session 可以互換；跨 Agent handoff 使用版本化 context/artifact bundle。
 
 ### 2.6 Verification Engine
 
@@ -121,8 +132,8 @@ Verifier 使用與 worker self-report 不同的證據來源：artifact read-back
 {
   "run_id": "run_...",
   "proposal_id": "prp_...",
-  "provider": "hermes",
-  "external_task_id": "...",
+  "runtime": {"id": "codex", "adapter_version": "0.1.0", "runtime_version": "...", "protocol": "sdk"},
+  "external": {"task_id": "...", "session_id": "...", "process_id": null},
   "attempt": 1,
   "status": "queued|running|worker_reported_done|failed|timed_out|cancelled",
   "started_at": "RFC3339|null",
@@ -186,9 +197,9 @@ Proposal 內容、目標或 capability 改變後，舊 approval 自動失效。
 
 ## 7. Upstream compatibility
 
-- 每個 release pin Hermes 版本／commit。
-- 內部 contract 不直接洩漏 Hermes database schema。
-- 所有 internal import 集中在單一 adapter package。
+- 每個 release pin 各 Supported runtime 與 adapter 版本／commit。
+- 內部 contract 不直接洩漏任何 runtime 的 database 或 session schema。
+- 所有 vendor import 集中在對應 adapter package。
 - 支援 release matrix；upstream `main` 只作 early warning。
 - 缺少 hook 時先做 external verifier，不立即 fork conversation loop。
 
@@ -198,7 +209,7 @@ Proposal 內容、目標或 capability 改變後，舊 approval 自動失效。
 
 - mock AgentMemoryOS
 - local audit store
-- Hermes sandbox
+- fake runtime 與 vendor-neutral sandbox fixtures
 - 無 production credentials
 
 ### Shadow
@@ -210,7 +221,7 @@ Proposal 內容、目標或 capability 改變後，舊 approval 自動失效。
 
 ### Controlled execution
 
-- capability-scoped Hermes runtime
+- capability-scoped Agent Runtime
 - low-risk allowlist
 - verifier required
 - approval service enabled
@@ -220,7 +231,7 @@ Proposal 內容、目標或 capability 改變後，舊 approval 自動失效。
 - Memory unavailable：不產生具副作用提案；記錄 degraded event。
 - Policy unavailable：fail closed。
 - Audit unavailable：medium+ risk fail closed；MVP 建議全部 fail closed。
-- Hermes unavailable：proposal 保持 approved/queued，受 TTL 與 retry policy 管理。
+- Selected runtime unavailable：由 policy 判斷等待、切換至乾淨 workspace 的 fallback runtime，或保持 approved/queued；不得在 dirty workspace 盲目跨 Agent 重試。
 - Verifier unavailable：`ExecutionRun` 保持 `worker_reported_done`；workflow projection 顯示 `verifying`，且尚無 final `VerificationResult`，不得標記 verified。
 - Feedback unavailable：保存 outbox，避免丟失結果。
 
@@ -231,7 +242,7 @@ Proposal 內容、目標或 capability 改變後，舊 approval 自動失效。
 1. Runtime language and package strategy
 2. Persistence and event model
 3. AgentMemoryOS adapter contract
-4. Hermes integration seam
+4. Agent Runtime SPI、routing 與 adapter seam
 5. MCP compatibility baseline
 6. Risk tiers and approval model
 7. Verification evidence model

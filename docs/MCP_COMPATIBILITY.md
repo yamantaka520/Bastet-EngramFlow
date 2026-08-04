@@ -29,14 +29,16 @@ MVP 同時要求：
 - 若 AgentMemoryOS MCP server 有 `2.x` 產品線，contract tests 的最低版本設定為 `>=2.0.0`；
 - 不使用無上限的 major-version dependency 範圍，除非 compatibility CI 已覆蓋下一 major。
 
-## 4. Hermes 整合基線
+## 4. 多 Agent Runtime 整合基線
+
+Hermes 可作為 MCP client 或 server；Claude Code、Codex、AGY 與 Grok Build 的 MCP client 能力則必須依 pinned version 分別驗證。MCP 在本專案定位為 memory/context/tool data plane，不單獨承擔 durable task lifecycle、workspace ownership、cancel、resume 或 independent verification。
 
 Hermes 可作為：
 
 - MCP client：連接 local stdio 或 remote HTTP server；
 - MCP server：對其他 client 暴露 Hermes 能力。
 
-Bastet-EngramFlow 的 MVP 預設使用 **Hermes 作為 client，EngramFlow／AgentMemoryOS 端提供受治理工具介面**；最終方向仍須由 source-first assessment 與 threat model 決定。
+Bastet-EngramFlow 的 MVP 先建立 **runtime-neutral MCP server contract，EngramFlow／AgentMemoryOS 端提供受治理工具介面**；至少以一個 pinned runtime client 完成 E2E，其餘 runtime 依 compatibility matrix 個別升級支援狀態。
 
 ## 5. 必測能力
 
@@ -72,4 +74,5 @@ MCP 支援完成必須同時符合：
 - 「MCP 2.0+」指的是哪個 component/version axis？
 - MVP 要支援 stdio、HTTP，或兩者？
 - 首個 official MCP protocol date baseline？
-- 是否需要 Hermes 作為 MCP server 的反向使用情境？
+- 哪些 runtime 作為首批 MCP client release gate？
+- 是否需要任一 Agent Runtime 作為 MCP server 的反向使用情境？

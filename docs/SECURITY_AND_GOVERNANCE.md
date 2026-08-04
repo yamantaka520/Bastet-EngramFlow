@@ -51,6 +51,8 @@
 - project isolation：memory、proposal、execution 不可跨 project 泄漏。
 - secret isolation：credential 不得寫入 Git、prompt、memory evidence 或一般 log。
 - immutable lineage：trigger → proposal → decision → run → verification → feedback。
+- runtime isolation：每個 run 綁定 runtime/adapter version、effective capabilities、workspace 與 execution identity。
+- clean fallback：具 workspace write 的跨 Agent fallback 必須使用乾淨 worktree/checkpoint，不得接手未驗證 dirty state。
 - approval expiry：批准具 TTL，且只對特定 digest 有效。
 - idempotency：重試不可重複副作用。
 - evidence gate：未驗證不得標記完成。
@@ -60,6 +62,7 @@
 - 外部網頁、文件、tool output、memory text 一律視為 untrusted data。
 - 模型輸出的 risk tier 只供參考，最終由 deterministic rules 判定。
 - tool schema 與 capability allowlist 由 runtime 控制，不由 prompt 擴權。
+- EngramFlow policy、adapter capability 與 runtime effective permission 取交集；runtime 不得自行宣告新增權限。
 - 外部文字中的「忽略規則」「執行命令」不能改變 policy。
 - 高風險參數需 normalize、validate 並與批准內容比對。
 
@@ -77,7 +80,7 @@
 - actor / service identity
 - project/user scope
 - correlation、trigger、proposal、decision、run、verification IDs
-- schema/policy/adapter/version
+- schema/policy/adapter/runtime/protocol/version
 - action target 與 capability
 - approval identity/digest/expiry（如適用）
 - sanitized result/evidence reference

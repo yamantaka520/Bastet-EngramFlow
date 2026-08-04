@@ -7,7 +7,7 @@
 
 ## 願景
 
-Bastet-EngramFlow 將自研 **AgentMemoryOS** 與 **Hermes Agent** 整合，把被動的「查詢記憶」提升為可治理的主動式流程：
+Bastet-EngramFlow 將自研 **AgentMemoryOS** 與可插拔的 **Agent Runtime** 整合，把被動的「查詢記憶」提升為可治理的主動式流程。首批目標 runtime 包含 Hermes Agent、Claude Code、OpenAI Codex、AGY/Antigravity CLI 與 Grok Build：
 
 ```text
 Memory → Resonance → Proposal → Policy → Execution → Verification → Feedback
@@ -18,16 +18,19 @@ Memory → Resonance → Proposal → Policy → Execution → Verification → 
 ## 核心原則
 
 - **記憶有證據**：提案必須攜帶來源、關聯理由與可信度。
-- **認知與執行分離**：AgentMemoryOS 負責記憶／共鳴；Hermes 負責工具與任務執行。
+- **認知與執行分離**：AgentMemoryOS 負責記憶／共鳴；可插拔 Agent Runtime 負責受限工具與任務執行。
 - **Policy before Action**：高風險、不可逆或對外操作不得自動放行。
 - **Completion requires Evidence**：worker 回報完成不等於驗證完成。
-- **Adapter over Fork**：優先使用 Hermes plugin、MCP、hook 與 task API，避免深度 fork。
+- **Adapter over Fork**：優先使用各 runtime 的 native SDK/API、MCP/ACP、hook 與 structured CLI，避免深度 fork。
 - **Shadow-first**：先觀察提案品質，再逐類開放自治權限。
 
 ## 文件索引
 
 - [完整專案計畫](docs/PROJECT_PLAN.md)
 - [系統架構](docs/ARCHITECTURE.md)
+- [專案狀態](docs/PROJECT_STATUS.md)
+- [文件治理](docs/GOVERNANCE.md)
+- [可追溯性規範](docs/TRACEABILITY.md)
 - [MCP 相容性策略](docs/MCP_COMPATIBILITY.md)
 - [相容性矩陣](docs/COMPATIBILITY_MATRIX.md)
 - [安全與治理](docs/SECURITY_AND_GOVERNANCE.md)
@@ -38,7 +41,7 @@ Memory → Resonance → Proposal → Policy → Execution → Verification → 
 ## 第一階段交付目標
 
 1. 定義 `MemorySignal`、`ActionProposal`、`PolicyDecision`、`ExecutionRun`、`VerificationResult` 與 `FeedbackRecord` 契約。
-2. 建立 AgentMemoryOS adapter 與 Hermes adapter。
+2. 建立 AgentMemoryOS adapter、Agent Runtime SPI 與 runtime registry。
 3. 實作 shadow mode：只產生與記錄提案，不執行副作用。
 4. 加入 deduplication、cooldown、budget、risk tier 與 approval gate。
 5. 建立端到端 contract tests 與稽核軌跡。
@@ -47,7 +50,7 @@ Memory → Resonance → Proposal → Policy → Execution → Verification → 
 
 ## 快速狀態
 
-目前 repository 已建立主要規劃文件與治理骨架；尚未進入 production implementation。技術選型與里程碑請以 `docs/PROJECT_PLAN.md` 為準，未決策項目仍須透過 ADR 定案。
+目前 repository 已進入 `STAGE-000` runtime-neutral foundation。即時進度以 `docs/PROJECT_STATUS.md` 為準；技術選型與里程碑以 `docs/PROJECT_PLAN.md` 為準，未決策項目仍須透過 ADR 定案。
 
 ## License
 

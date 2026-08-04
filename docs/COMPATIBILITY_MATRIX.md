@@ -14,9 +14,26 @@
 | Component | Version / Commit | Interface | Status | Evidence |
 |---|---|---|---|---|
 | AgentMemoryOS | TBD | native adapter | TBD | source-first assessment pending |
-| Hermes Agent | TBD pinned tag/commit | adapter seam TBD | TBD | source-first assessment pending |
+| EngramFlow Runtime SPI | `0.1.0-dev` | Python protocol/registry | Experimental | PLAN-001 contract tests pending |
+| Hermes Agent | TBD pinned tag/commit | native/MCP/task seam TBD | TBD | source-first assessment pending |
 | Hermes Agent latest tag | TBD | compatibility lane | TBD | CI pending |
 | Hermes Agent main | moving | early-warning only | Experimental | non-release-gating lane pending |
+| Claude Code | TBD pinned version | Agent SDK/headless/MCP/hooks candidate | TBD | source-first assessment pending |
+| OpenAI Codex | TBD pinned version | Codex SDK/MCP server candidate | TBD | source-first assessment pending |
+| AGY / Antigravity CLI | TBD pinned version | structured CLI/MCP candidate | TBD | machine-readable lifecycle assessment pending |
+| Grok Build | TBD pinned version | streaming JSON CLI/Responses API/MCP candidate | TBD | source-first assessment pending |
+
+## Runtime capability matrix
+
+本表是 discovery backlog，不是支援承諾。`?` 表示必須以 pinned version 真實測試。
+
+| Runtime | Structured lifecycle | Cancel | Resume | Sandbox/workspace | MCP | Preferred integration | Status |
+|---|---|---|---|---|---|---|---|
+| Hermes Agent | ? | ? | ? | ? | client/server candidate | native task/plugin/MCP | TBD |
+| Claude Code | ? | ? | ? | ? | client candidate | Agent SDK | TBD |
+| OpenAI Codex | ? | ? | ? | ? | client/server candidate | Codex SDK | TBD |
+| AGY | ? | ? | ? | ? | client candidate | structured CLI | TBD |
+| Grok Build | ? | ? | ? | ? | client candidate | streaming JSON CLI/API | TBD |
 
 ## MCP matrix
 
@@ -26,6 +43,9 @@
 | EngramFlow MCP adapter | semantic version TBD | date version TBD | TBD | TBD | TBD | contract tests pending |
 | Hermes MCP client | pinned Hermes version TBD | date version TBD | stdio | local | TBD | contract test pending |
 | Hermes MCP client | pinned Hermes version TBD | date version TBD | HTTP | OAuth/bearer/mTLS TBD | TBD | contract test pending |
+| Claude Code MCP client | pinned version TBD | date version TBD | stdio/HTTP TBD | TBD | TBD | contract test pending |
+| Codex MCP client | pinned version TBD | date version TBD | stdio/HTTP TBD | TBD | TBD | contract test pending |
+| Grok Build MCP client | pinned version TBD | date version TBD | stdio/HTTP TBD | TBD | TBD | contract test pending |
 
 ## Language / dependency matrix
 
@@ -33,7 +53,7 @@
 |---|---|---|---|
 | Python | proposed `>=3.11` | TBD | ADR pending |
 | AgentMemoryOS SDK | TBD with explicit upper bound | TBD | clean-env resolution pending |
-| Hermes adapter dependency | pinned/compatible range TBD | TBD | import + contract tests pending |
+| Runtime adapter dependencies | each pinned/compatible range TBD | TBD | per-adapter clean-env + contract tests pending |
 
 ## Promotion rule
 
