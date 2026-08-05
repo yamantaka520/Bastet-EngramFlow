@@ -10,18 +10,26 @@ updated: 2026-08-05
 
 # Bastet-EngramFlow 專案狀態
 
-- 最後更新：2026-08-05 12:37 CST（UTC+8）
+- 最後更新：2026-08-05 13:29 CST（UTC+8）
 - 已完成階段：`STAGE-000` Runtime-neutral foundation
 - 已完成階段：`STAGE-001` Scheduled execution reconciliation core
 - 已完成階段：`STAGE-002` Durable reconciliation delivery
 - 已完成階段：`STAGE-003` Hermes production reconciliation hook integration
-- 目前狀態：STAGE-003 accepted；source-pinned artifact完成，production deployment未執行
+- 目前階段：`STAGE-004` production SHA reconciliation and rollout readiness
+- 目前狀態：read-only production discovery完成；舊patch與production SHA不相容，isolated rebase進行中
 - 工作分支：`feat/hermes-production-reconciliation-hook`
 - Foundation commits：`ee4dc13afaf9ebf293dcfea848979b3762687cd8`、`4958b501869050b5bdbec33d299cbafc8cb87116`
 
 ## Active Goals
 
 - [GOAL-001](goals/GOAL-001-runtime-neutral-governed-continuation.md)：建立跨 Agent Runtime 的受治理主動專案延續能力。
+
+## Active STAGE-004 Deliverables
+
+- [STAGE-004](stages/STAGE-004-hermes-production-rollout-readiness.md)：production SHA reconciliation與rollout readiness；production deployment未授權。
+- [PLAN-005](plans/PLAN-005-hermes-production-rebase-readiness.md)：isolated rebase、focused E2E、artifact與rollback runbook。
+- Production baseline：Hermes `d0c0a6b8fe5ff45bcb3d2ba34e596cca7100ed5a`，clean custom branch `feat/agy-cli-oauth-stdin-hardening`。
+- Discovered blocker：STAGE-003 patch對production scheduler/plugin hunks均不適用；禁止直接套用。
 
 ## Accepted STAGE-003 Deliverables
 

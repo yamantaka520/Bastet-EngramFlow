@@ -1,8 +1,8 @@
 # Bastet-EngramFlow 專案計畫
 
-- 文件版本：`0.5.1`
-- 更新時間：2026-08-05 12:37 CST（UTC+8）
-- 專案狀態：STAGE-003 accepted / source-pinned integration complete / production deployment not executed
+- 文件版本：`0.6.0`
+- 更新時間：2026-08-05 13:29 CST（UTC+8）
+- 專案狀態：STAGE-004 active / production SHA rebase readiness / production deployment not authorized
 - Repository：`yamantaka520/Bastet-EngramFlow`
 - 授權：Apache-2.0
 
