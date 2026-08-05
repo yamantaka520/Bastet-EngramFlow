@@ -23,7 +23,7 @@
 5. Worker self-report → independent verifier
 6. EngramFlow feedback → AgentMemoryOS
 7. Runtime → external systems
-8. Isolated scheduled run → Reconciler → Conversation Inbox / Proposal Sink
+8. Isolated scheduled run → Durable Ledger/Outbox → Conversation Ingress / Proposal Queue
 
 所有跨 boundary 資料必須經 schema validation、scope/ACL 檢查與 sanitized logging。
 
@@ -104,8 +104,14 @@
 ### Remediation storm / unsafe replay
 
 - 威脅：同一 run 重複投遞、反覆派工，或在 timeout 後重播 external side effect。
-- 控制：`(schedule_id, run_id)` dedup、event/proposal stable ID、idempotent sinks、depth gate；external side effect 與缺少 idempotency key 一律 approval-gated。
-- 測試：duplicate run 只形成一個邏輯 event/proposal；sink failure 可重試但不得被誤報已 commit。
+- 控制：canonical run digest、persisted decision、event/proposal stable ID、lease ownership、idempotent sinks、depth gate；external side effect 與缺少 idempotency key 一律 approval-gated。
+- 測試：同 key 不同 payload 明確衝突；policy drift duplicate 回傳原 decision；sink failure/restart 可重試但不得被誤報已 commit。
+
+### Durable outbox exhaustion / lease replay
+
+- 威脅：巨大 metadata/payload 膨脹 SQLite 或 downstream；worker crash/lease expiry 造成重複 delivery；stale worker 覆寫新 owner 狀態。
+- 控制：canonical JSON byte limit、atomic ledger/outbox transaction、`BEGIN IMMEDIATE` claim、owner-bound ack/fail、documented at-least-once semantics。
+- 測試：oversized payload 在 ledger write 前 fail closed；expired lease 可 recovery；舊 owner ack 必須拒絕；event ack 前 proposal 不可 claim。
 
 ## 4. High-risk default policy
 

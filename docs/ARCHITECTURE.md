@@ -102,10 +102,13 @@ Verifier 使用與 worker self-report 不同的證據來源：artifact read-back
 ### 2.9 Scheduled Execution Reconciler
 
 - 接收隔離 scheduled run 產生的 `ScheduledRunEnvelope`，不 resume 或直接改寫 vendor conversation session store。
-- 將 outcome、finding 與 artifact 轉為 `ConversationContextEvent`，透過 idempotent `ConversationInbox` port 回流原 conversation/thread。
-- 對 retryable finding 建立 `RemediationProposal`；external side effect、critical、缺少 idempotency key 或超出 continuation depth 時一律要求 approval。
-- Reference coordinator 以 `(schedule_id, run_id)` 做 process-local 去重；sink 未全部成功前不提交 run key，允許 stable-ID idempotent retry。Production 跨重啟／多實例保證需 durable ledger/outbox adapter。
-- Proposal created、worker reported done 與 independently verified 保持不同狀態。
+- 將 outcome、finding 與 artifact 轉為 `ConversationContextEvent`；對問題形成受治理 `RemediationProposal`。
+- SQLite reference store 以同一 transaction 寫入 canonical run ledger、persisted policy decision 與 event/proposal outbox；同 run key 不同 payload 會明確衝突。
+- Outbox 使用 lease claim/recovery 與 stable item IDs，提供 at-least-once delivery。Event 必須先 ack，才允許同 run proposal dispatch。
+- Sink success 與 durable ack 之間仍存在 replay window；sink 必須以 event/proposal ID idempotent 去重，不能宣稱 exactly-once。
+- Canonical run/event/proposal JSON 在寫入前受 byte limit；Hermes 文字 additionally 經 redaction、control-character normalization 與 truncation。
+- Hermes integration 只暴露 structured cron result、conversation ingress 與 remediation queue contracts，不 import private Hermes modules，也不直接 mutation transcript/SQLite session history。
+- Proposal created、worker reported done、approved、executed 與 independently verified 保持不同狀態。
 
 ## 3. 核心資料契約
 

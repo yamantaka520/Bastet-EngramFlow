@@ -3,7 +3,7 @@
 **Memory Resonance Runtime for Autonomous Agents**
 以記憶共鳴驅動自主 Agent 關聯、推理、提案、執行與驗證的開源架構。
 
-> 專案狀態：`STAGE-001` Scheduled execution reconciliation core accepted
+> 專案狀態：`STAGE-002` Durable reconciliation delivery accepted
 
 ## 願景
 
@@ -51,7 +51,7 @@ Memory → Resonance → Proposal → Policy → Execution → Verification → 
 
 ## 快速狀態
 
-`STAGE-000` runtime-neutral foundation 與 `STAGE-001` scheduled execution reconciliation core 已完成驗收。隔離排程的結果、問題與 remediation proposal 現可透過 runtime-neutral core 安全回流 conversation port；production durable adapter 仍屬後續階段。即時進度以 `docs/PROJECT_STATUS.md` 為準。
+`STAGE-000`、`STAGE-001` 與 `STAGE-002` 已完成驗收。Current core 提供 SQLite durable ledger/outbox、lease recovery、canonical payload byte limit 與 Hermes structured adapter contracts；這仍是 reference integration seam，尚未修改或部署 Hermes production scheduler/gateway hook。即時進度以 `docs/PROJECT_STATUS.md` 為準。
 
 ## License
 

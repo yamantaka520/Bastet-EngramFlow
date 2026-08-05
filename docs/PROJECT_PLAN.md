@@ -1,8 +1,8 @@
 # Bastet-EngramFlow 專案計畫
 
-- 文件版本：`0.3.0`
-- 更新時間：2026-08-05 08:13 CST（UTC+8）
-- 專案狀態：STAGE-001 accepted / scheduled execution reconciliation core
+- 文件版本：`0.4.0`
+- 更新時間：2026-08-05 09:10 CST（UTC+8）
+- 專案狀態：STAGE-002 accepted / durable reconciliation delivery
 - Repository：`yamantaka520/Bastet-EngramFlow`
 - 授權：Apache-2.0
 

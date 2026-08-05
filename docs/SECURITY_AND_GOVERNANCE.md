@@ -59,6 +59,10 @@
 - scheduled return isolation：排程結果只能以 structured data event 進入 conversation inbox，不得直接改寫或跨 runtime resume 原 session store。
 - remediation boundary：core 只判斷 auto-remediation eligibility；external side effect、critical、non-idempotent 或 depth-exhausted 一律 approval-gated。
 - delivery deduplication：conversation event 與 remediation proposal 分別使用穩定 ID，sink 必須支援 idempotent retry。
+- durable enqueue：run ledger、persisted decision 與 outbox rows 必須在同一 transaction 提交；policy drift 後的 duplicate 讀回原 decision。
+- bounded payload：canonical run/event/proposal JSON 於 SQLite write 前執行 byte limit；超限 fail closed，不留下 partial ledger。
+- lease ownership：只有目前 lease owner 可 ack/fail；expired lease 可 recovery，但 sink-success/ack crash window 仍是 at-least-once。
+- adapter isolation：Hermes adapter 不 import private scheduler/session modules，不直接改寫 transcript 或 session database。
 
 ## 4. Prompt injection 防護
 

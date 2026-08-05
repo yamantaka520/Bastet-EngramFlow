@@ -15,7 +15,7 @@
 |---|---|---|---|---|
 | AgentMemoryOS | TBD | native adapter | TBD | source-first assessment pending |
 | EngramFlow Runtime SPI | `0.1.0-dev` | Python protocol/registry | Experimental | PLAN-001 contract tests pending |
-| Hermes Agent | TBD pinned tag/commit | native/MCP/task seam TBD | TBD | source-first assessment pending |
+| Hermes Agent | local source assessed; release pin TBD | structured cron result / conversation ingress contracts | Experimental | STAGE-002 contract tests; production hook/E2E pending |
 | Hermes Agent latest tag | TBD | compatibility lane | TBD | CI pending |
 | Hermes Agent main | moving | early-warning only | Experimental | non-release-gating lane pending |
 | Claude Code | TBD pinned version | Agent SDK/headless/MCP/hooks candidate | TBD | source-first assessment pending |

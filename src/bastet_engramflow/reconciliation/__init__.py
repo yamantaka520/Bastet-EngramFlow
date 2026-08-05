@@ -1,6 +1,24 @@
 """Scheduled execution reconciliation public API."""
 
 from .coordinator import ReconciliationCoordinator
+from .durable import (
+    DurableEnqueueReceipt,
+    IdempotencyConflictError,
+    LeaseOwnershipError,
+    OutboxItem,
+    OutboxKind,
+    OutboxState,
+    PayloadTooLargeError,
+    SQLiteReconciliationStore,
+)
+from .hermes import HermesCronResult, HermesCronResultMapper, TextSanitizer
+from .hermes_adapters import (
+    HermesConversationInboxAdapter,
+    HermesConversationIngress,
+    HermesCronReconciliationAdapter,
+    HermesRemediationProposalAdapter,
+    HermesRemediationQueue,
+)
 from .models import (
     ActionClass,
     ConversationContextEvent,
@@ -16,13 +34,30 @@ from .models import (
 )
 from .policy import ReconciliationPolicy
 from .ports import ConversationInbox, RemediationProposalSink
+from .service import DispatchReceipt, DurableReconciliationService
 
 __all__ = [
     "ActionClass",
     "ConversationContextEvent",
     "ConversationInbox",
     "ConversationReference",
+    "DispatchReceipt",
+    "DurableEnqueueReceipt",
+    "DurableReconciliationService",
     "FindingSeverity",
+    "HermesCronResult",
+    "HermesCronResultMapper",
+    "HermesConversationInboxAdapter",
+    "HermesConversationIngress",
+    "HermesCronReconciliationAdapter",
+    "HermesRemediationProposalAdapter",
+    "HermesRemediationQueue",
+    "IdempotencyConflictError",
+    "LeaseOwnershipError",
+    "OutboxItem",
+    "OutboxKind",
+    "OutboxState",
+    "PayloadTooLargeError",
     "ReconciliationCoordinator",
     "ReconciliationDecision",
     "ReconciliationPolicy",
@@ -33,4 +68,6 @@ __all__ = [
     "RunOutcome",
     "ScheduledFinding",
     "ScheduledRunEnvelope",
+    "SQLiteReconciliationStore",
+    "TextSanitizer",
 ]
