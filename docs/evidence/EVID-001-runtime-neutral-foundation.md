@@ -2,7 +2,7 @@
 id: EVID-001
 title: Runtime-neutral foundation 驗證證據
 type: evidence
-status: review
+status: accepted
 owner: engineering
 created: 2026-08-05
 updated: 2026-08-05
@@ -88,4 +88,4 @@ Negative tests 已證明 checker 可偵測不存在的治理 ID、broken Markdow
 
 ## Limitations
 
-本證據為 review 狀態；待修正後的第二輪獨立 review 與 commit read-back。它不構成任何真實 Agent adapter 的 Supported 聲明。
+本證據已由 final independent read-back 接受。實作 commit `ee4dc13afaf9ebf293dcfea848979b3762687cd8` 已透過 `git show` read-back，且該實作 checkpoint 完成後沒有未提交的 implementation 變更。本文件的 `accepted` 狀態轉換屬於後續 governance closure metadata，不宣稱它已包含在該實作 commit；本證據亦不構成任何真實 Agent adapter 的 Supported 聲明。

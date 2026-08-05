@@ -2,7 +2,7 @@
 id: REVIEW-001
 title: Runtime-neutral foundation 獨立審查
 type: review
-status: review
+status: accepted
 owner: independent-reviewer
 created: 2026-08-05
 updated: 2026-08-05
@@ -74,14 +74,17 @@ Fresh-context reviewer 重跑 Ruff、18 tests、docs checker、compileall 與 ca
 - 新增 `test_adapter_contract_rejects_unknown_execution_id`。
 - 完整測試增為 19 tests，Ruff、docs checker、compileall 與 diff check 全部通過。
 
-## Final Read-back
+## Final Read-back（2026-08-05）
 
-待 fresh-context reviewer 確認 Round 2 remediation。接受條件：
+Fresh-context reviewer 在 implementation commit 前檢查 remediation diff，並實際執行 focused registry suite（9 tests）與 full suite（19 tests），全部通過。Reviewer 確認：
 
-- 無未處理 High/Medium finding。
-- 19 tests、Ruff、docs checker 與 compileall 可重現。
-- 治理狀態與 evidence 一致。
+- 最後 1 個 Medium 已 resolved。
+- 沒有新的 High/Medium finding。
+- `REVIEW-001` 可接受。
+- 實作 commit：`ee4dc13afaf9ebf293dcfea848979b3762687cd8`。
+
+Governance closure metadata 另經獨立 read-back；審查指出 implementation checkpoint 與 closure metadata 的證據邊界必須明確區分，相關文字已在 closure commit 前修正。
 
 ## Current Decision
 
-`review`。Round 1/2 均沒有 High finding；最後 1 個 Medium 已修正，尚待 final independent read-back。
+`accepted`。Final independent read-back 無未處理 High/Medium finding；19 tests 與完整治理 gate 可重現。

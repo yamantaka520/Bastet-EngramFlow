@@ -31,8 +31,8 @@ NNNN-short-kebab-case-title.md
 1. Runtime language and package strategy
 2. Persistence and event model
 3. AgentMemoryOS adapter contract
-4. Agent Runtime SPI、routing 與 adapter seam（ADR-0001 Proposed）
+4. Agent Runtime SPI、routing 與 adapter seam（ADR-0001 Accepted）
 5. MCP compatibility baseline
 6. Risk tiers and approval model
 7. Verification evidence model
-8. Repository-native documentation governance（ADR-0002 Proposed）
+8. Repository-native documentation governance（ADR-0002 Accepted）

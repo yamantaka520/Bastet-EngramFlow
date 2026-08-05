@@ -1,8 +1,8 @@
 # Bastet-EngramFlow 專案計畫
 
-- 文件版本：`0.2.0-draft`
-- 更新時間：2026-08-05 07:25 CST（UTC+8）
-- 專案狀態：Active development / STAGE-000
+- 文件版本：`0.2.0`
+- 更新時間：2026-08-05 07:50 CST（UTC+8）
+- 專案狀態：STAGE-000 accepted / next stage planning required
 - Repository：`yamantaka520/Bastet-EngramFlow`
 - 授權：Apache-2.0
 

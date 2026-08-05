@@ -50,7 +50,7 @@ Memory → Resonance → Proposal → Policy → Execution → Verification → 
 
 ## 快速狀態
 
-目前 repository 已進入 `STAGE-000` runtime-neutral foundation。即時進度以 `docs/PROJECT_STATUS.md` 為準；技術選型與里程碑以 `docs/PROJECT_PLAN.md` 為準，未決策項目仍須透過 ADR 定案。
+`STAGE-000` runtime-neutral foundation 已完成驗收；後續 adapter discovery 與 implementation 必須先建立下一份 Stage/Plan。即時進度以 `docs/PROJECT_STATUS.md` 為準；技術選型與里程碑以 `docs/PROJECT_PLAN.md` 為準，未決策項目仍須透過 ADR 定案。
 
 ## License
 

@@ -1,6 +1,6 @@
 # ADR-0001：Runtime-neutral Core 與薄 Agent Runtime Adapters
 
-- Status：Proposed
+- Status：Accepted
 - Date：2026-08-05
 - Decision owners：Project maintainers
 - Related：GOAL-001、STAGE-000、PLAN-001

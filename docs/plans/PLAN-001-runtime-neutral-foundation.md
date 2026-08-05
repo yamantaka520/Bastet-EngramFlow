@@ -2,7 +2,7 @@
 id: PLAN-001
 title: Runtime-neutral foundation 第一個工程增量
 type: plan
-status: active
+status: accepted
 owner: engineering
 created: 2026-08-05
 updated: 2026-08-05

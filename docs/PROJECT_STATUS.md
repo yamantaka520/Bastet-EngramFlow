@@ -10,59 +10,49 @@ updated: 2026-08-05
 
 # Bastet-EngramFlow 專案狀態
 
-- 最後更新：2026-08-05 07:25 CST（UTC+8）
-- 專案階段：`STAGE-000` Runtime-neutral foundation
-- 整體狀態：Active development
+- 最後更新：2026-08-05 07:50 CST（UTC+8）
+- 已完成階段：`STAGE-000` Runtime-neutral foundation
+- 目前狀態：Foundation accepted；下一階段尚未啟動
 - 工作分支：`feat/runtime-neutral-foundation`
-- 基準 commit：`baf70db78d91495e455fec7990ab36d2b42216db`
+- Foundation commit：`ee4dc13afaf9ebf293dcfea848979b3762687cd8`
 
 ## Active Goals
 
 - [GOAL-001](goals/GOAL-001-runtime-neutral-governed-continuation.md)：建立跨 Agent Runtime 的受治理主動專案延續能力。
 
-## Active Stages
+## Accepted Deliverables
 
-- [STAGE-000](stages/STAGE-000-foundation.md)：完成治理、runtime-neutral contract 與可測骨架。
-
-## Active Plans
-
+- [STAGE-000](stages/STAGE-000-foundation.md)：runtime-neutral contract 與治理基線。
 - [PLAN-001](plans/PLAN-001-runtime-neutral-foundation.md)：文件治理與 Agent Runtime SPI 第一個工程增量。
+- [EVID-001](evidence/EVID-001-runtime-neutral-foundation.md)：19 tests、Ruff、docs checker、compileall、diff 與 audit 證據。
+- [REVIEW-001](reviews/REVIEW-001-runtime-neutral-foundation.md)：三輪獨立 read-back，最終無未處理 High/Medium finding。
+- ADR-0001：runtime-neutral core + thin runtime adapters。
+- ADR-0002：repository-native 文件治理與穩定 ID。
 
-## Active Reviews and Evidence
+## Foundation Result
 
-- [EVID-001](evidence/EVID-001-runtime-neutral-foundation.md)：完整驗證證據，狀態 `review`。
-- [REVIEW-001](reviews/REVIEW-001-runtime-neutral-foundation.md)：獨立工程審查，Round 2 待確認。
-
-## Current Deliverables
-
-- 文件治理規範與追溯矩陣。
-- Runtime-neutral architecture/plan 調整。
-- Python 3.11 Agent Runtime SPI。
-- Registry、capability 與 lifecycle contract tests。
-- 第一份可重現 evidence 與獨立 review。
+- 建立 immutable runtime models、AgentRuntime Protocol、capability registry 與標準錯誤。
+- Worker lifecycle 與 independent verification lifecycle 分離。
+- Runtime selection 依 capabilities，不依 vendor version 字串。
+- 文件治理檢查可偵測 broken ID、broken Markdown link 與無 EVID 的 Supported claim。
+- Compatibility matrix 對 Hermes、Claude Code、Codex、AGY、Grok Build 均維持 TBD/Experimental，未做虛假 Supported 聲明。
 
 ## Blockers
 
 - 無。
 
-## Decisions Pending Review
+## Current Risks
 
-- ADR-0001：採 runtime-neutral core + thin runtime adapters。
-- ADR-0002：採 repository-native 文件治理與穩定 ID。
-
-## Risks
-
-- 不同 Agent 的 lifecycle、sandbox 與 cancellation 能力不一致。
-- 將 MCP 錯當完整 durable execution protocol。
-- 文件治理過重導致實作與文件脫節。
-- 未經 evidence 即宣稱 runtime Supported。
+- 不同 Agent 的 lifecycle、sandbox、session、artifact 與 cancellation 能力仍須 pinned-version discovery。
+- 尚無真實 Agent adapter，因此不能執行 production project continuation。
+- 下一階段若沒有先建立 Stage/Plan，將違反治理規範。
 
 ## Next Gate
 
-`PLAN-001` 進入 review 前必須完成：
+開始任何 vendor adapter 前，必須先建立並核准下一個 Stage/Plan，至少涵蓋：
 
-1. 文件與 architecture 一致性更新。
-2. Runtime SPI focused tests 通過。
-3. 文件治理檢查通過。
-4. 建立 EVID-001。
-5. 完成獨立 diff review。
+1. Hermes、Claude Code、Codex、AGY、Grok Build 的 source-first capability discovery。
+2. Pinned versions、licenses、integration seams 與 sandbox/workspace policy。
+3. 第一個 production-candidate adapter 的選擇理由與 E2E acceptance criteria。
+4. Agent Context Bundle v1 與真實 AgentMemoryOS contract 的範圍。
+5. 新 Evidence/Review IDs 與 compatibility promotion gate。

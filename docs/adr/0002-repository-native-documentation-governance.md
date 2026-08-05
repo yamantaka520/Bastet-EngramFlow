@@ -1,6 +1,6 @@
 # ADR-0002：Repository-native 文件治理與穩定追溯 ID
 
-- Status：Proposed
+- Status：Accepted
 - Date：2026-08-05
 - Decision owners：Project maintainers
 - Related：GOAL-001、STAGE-000、PLAN-001

@@ -2,7 +2,7 @@
 id: STAGE-000
 title: Runtime-neutral foundation
 type: stage
-status: active
+status: accepted
 owner: project-maintainers
 created: 2026-08-05
 updated: 2026-08-05
