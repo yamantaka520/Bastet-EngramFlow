@@ -10,20 +10,29 @@ updated: 2026-08-05
 
 # Bastet-EngramFlow 專案狀態
 
-- 最後更新：2026-08-05 15:10 CST（UTC+8）
+- 最後更新：2026-08-05 17:25 CST（UTC+8）
 - 已完成階段：`STAGE-000` Runtime-neutral foundation
 - 已完成階段：`STAGE-001` Scheduled execution reconciliation core
 - 已完成階段：`STAGE-002` Durable reconciliation delivery
 - 已完成階段：`STAGE-003` Hermes production reconciliation hook integration
 - 已完成階段：`STAGE-004` production SHA reconciliation and rollout readiness
 - 已完成階段：`STAGE-005` Bastet Hermes controlled production rollout
-- 目前狀態：production observer hook deployed；durable ledger/outbox、Telegram DM origin及dedup read-back accepted
+- 目前階段：`STAGE-006` reconciliation outbox shadow inspection（accepted）
+- 目前狀態：read-only shadow inspector、production preflight、71-test gate與independent review accepted；actual dispatcher未啟用
 - 工作分支：`feat/hermes-production-reconciliation-hook`
 - Foundation commits：`ee4dc13afaf9ebf293dcfea848979b3762687cd8`、`4958b501869050b5bdbec33d299cbafc8cb87116`
 
 ## Active Goals
 
 - [GOAL-001](goals/GOAL-001-runtime-neutral-governed-continuation.md)：建立跨 Agent Runtime 的受治理主動專案延續能力。
+
+## Accepted STAGE-006 Deliverables
+
+- [STAGE-006](stages/STAGE-006-reconciliation-outbox-shadow-inspection.md)：只觀測dispatch readiness，不claim/ack或呼叫sink。
+- [PLAN-007](plans/PLAN-007-read-only-reconciliation-outbox-shadow-inspection.md)：read-only SQLite inspector、bounded redacted CLI與TDD驗證。
+- [EVID-008](evidence/EVID-008-reconciliation-outbox-shadow-inspection.md)：RED、8項focused GREEN、review-fix、71-test full gate與production state read-back。
+- [REVIEW-008](reviews/REVIEW-008-stage-006-reconciliation-shadow-closure.md)：final ACCEPT，open High/Medium/Low均0。
+- Production boundary：沒有安裝wheel、修改config/systemd、建立scheduler或變更outbox state。
 
 ## Accepted STAGE-005 Deployment
 
@@ -105,4 +114,4 @@ updated: 2026-08-05
 
 ## Next Gate
 
-另立Stage/Plan設計production reconciliation outbox dispatcher、conversation sink與shadow-mode觀測。Pending outbox不代表已delivery或已remediation；任何dispatcher啟用、自動提案或production side effect仍需明確批准。
+STAGE-006已完成。若要啟用actual dispatcher、conversation sink或任何outbox state mutation，必須另立Stage/Plan並取得明確production approval；pending item不代表已delivery或已remediation。

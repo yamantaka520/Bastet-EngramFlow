@@ -35,6 +35,12 @@ from .models import (
 from .policy import ReconciliationPolicy
 from .ports import ConversationInbox, RemediationProposalSink
 from .service import DispatchReceipt, DurableReconciliationService
+from .shadow import (
+    ShadowCandidate,
+    ShadowInspectionError,
+    ShadowReport,
+    SQLiteOutboxShadowInspector,
+)
 
 __all__ = [
     "ActionClass",
@@ -68,6 +74,10 @@ __all__ = [
     "RunOutcome",
     "ScheduledFinding",
     "ScheduledRunEnvelope",
+    "ShadowCandidate",
+    "ShadowInspectionError",
+    "ShadowReport",
+    "SQLiteOutboxShadowInspector",
     "SQLiteReconciliationStore",
     "TextSanitizer",
 ]
