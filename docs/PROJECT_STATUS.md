@@ -10,13 +10,13 @@ updated: 2026-08-05
 
 # Bastet-EngramFlow 專案狀態
 
-- 最後更新：2026-08-05 13:29 CST（UTC+8）
+- 最後更新：2026-08-05 13:57 CST（UTC+8）
 - 已完成階段：`STAGE-000` Runtime-neutral foundation
 - 已完成階段：`STAGE-001` Scheduled execution reconciliation core
 - 已完成階段：`STAGE-002` Durable reconciliation delivery
 - 已完成階段：`STAGE-003` Hermes production reconciliation hook integration
-- 目前階段：`STAGE-004` production SHA reconciliation and rollout readiness
-- 目前狀態：read-only production discovery完成；舊patch與production SHA不相容，isolated rebase進行中
+- 已完成階段：`STAGE-004` production SHA reconciliation and rollout readiness
+- 目前狀態：production-SHA artifact與rollout readiness accepted；production deployment未授權、未執行
 - 工作分支：`feat/hermes-production-reconciliation-hook`
 - Foundation commits：`ee4dc13afaf9ebf293dcfea848979b3762687cd8`、`4958b501869050b5bdbec33d299cbafc8cb87116`
 
@@ -24,12 +24,15 @@ updated: 2026-08-05
 
 - [GOAL-001](goals/GOAL-001-runtime-neutral-governed-continuation.md)：建立跨 Agent Runtime 的受治理主動專案延續能力。
 
-## Active STAGE-004 Deliverables
+## Accepted STAGE-004 Deliverables
 
-- [STAGE-004](stages/STAGE-004-hermes-production-rollout-readiness.md)：production SHA reconciliation與rollout readiness；production deployment未授權。
-- [PLAN-005](plans/PLAN-005-hermes-production-rebase-readiness.md)：isolated rebase、focused E2E、artifact與rollback runbook。
+- [STAGE-004](stages/STAGE-004-hermes-production-rollout-readiness.md)：production SHA reconciliation與rollout readiness，狀態`accepted`；production deployment未授權。
+- [PLAN-005](plans/PLAN-005-hermes-production-rebase-readiness.md)：production-SHA rebase、hermetic E2E、multi-variant artifact與rollback runbook。
+- [EVID-005](evidence/EVID-005-hermes-production-rebase-readiness.md)：production variant verifier四態、358項Hermes scoped gate與63項Bastet full gate。
+- [REVIEW-005](reviews/REVIEW-005-hermes-production-rebase-readiness.md)：fixture hermeticity與post-apply gate findings已關閉；final High 0 / Medium 0。
+- [RUNBOOK-001](runbooks/RUNBOOK-001-hermes-production-post-cron-rollout.md)：production mutation、read-back與rollback操作邊界。
 - Production baseline：Hermes `d0c0a6b8fe5ff45bcb3d2ba34e596cca7100ed5a`，clean custom branch `feat/agy-cli-oauth-stdin-hardening`。
-- Discovered blocker：STAGE-003 patch對production scheduler/plugin hunks均不適用；禁止直接套用。
+- Production boundary：production checkout、config、allowlist與service均未修改或重啟。
 
 ## Accepted STAGE-003 Deliverables
 

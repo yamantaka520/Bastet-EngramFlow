@@ -2,7 +2,7 @@
 id: STAGE-004
 title: Hermes production SHA reconciliation and rollout readiness
 type: stage
-status: active
+status: accepted
 owner: engineering
 created: 2026-08-05
 updated: 2026-08-05

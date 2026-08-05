@@ -1,15 +1,48 @@
 {
   "integration": "hermes-post-cron-job-hook",
   "schema_version": "hermes.post_cron_job.v1",
-  "hermes_base_commit": "1072c0725115e9be0491ca4cb0d965b9f5f59874",
-  "patch_file": "patches/1072c0725-post-cron-job-hook.patch",
-  "patch_sha256": "2fa36a110d7dcf9a3fb5846ede59c95a5162edbea6f4c792b7026079a7d30c5b",
-  "upstream_files": [
-    "cron/scheduler.py",
-    "hermes_cli/plugins.py"
-  ],
-  "fixture_tests": [
-    "tests/test_post_cron_hook.py",
-    "tests/test_shell_bridge_e2e.py"
+  "variants": [
+    {
+      "id": "baseline-1072c0725",
+      "hermes_base_commit": "1072c0725115e9be0491ca4cb0d965b9f5f59874",
+      "patch_file": "patches/1072c0725-post-cron-job-hook.patch",
+      "patch_sha256": "2fa36a110d7dcf9a3fb5846ede59c95a5162edbea6f4c792b7026079a7d30c5b",
+      "upstream_files": [
+        "cron/scheduler.py",
+        "hermes_cli/plugins.py"
+      ],
+      "fixture_tests": [
+        "tests/test_post_cron_hook.py",
+        "tests/test_shell_bridge_e2e.py"
+      ],
+      "target_tests": [
+        "tests/cron/test_post_cron_hook.py",
+        "tests/cron/test_scheduler.py",
+        "tests/agent/test_shell_hooks.py",
+        "tests/agent/test_shell_hooks_consent.py"
+      ]
+    },
+    {
+      "id": "production-d0c0a6b",
+      "hermes_base_commit": "d0c0a6b8fe5ff45bcb3d2ba34e596cca7100ed5a",
+      "patch_file": "patches/d0c0a6b-post-cron-job-hook.patch",
+      "patch_sha256": "af1d421f0b33ee06e14dae9bfca20e4c5490e13c28f78b76dbb9979614cc65dc",
+      "upstream_files": [
+        "cron/scheduler.py",
+        "hermes_cli/plugins.py"
+      ],
+      "fixture_tests": [
+        "tests/test_post_cron_hook_d0c0a6b.py",
+        "tests/test_shell_bridge_e2e.py"
+      ],
+      "target_tests": [
+        "tests/cron/test_post_cron_hook.py",
+        "tests/cron/test_run_one_job.py",
+        "tests/cron/test_execution_ledger.py",
+        "tests/cron/test_scheduler.py",
+        "tests/agent/test_shell_hooks.py",
+        "tests/agent/test_shell_hooks_consent.py"
+      ]
+    }
   ]
 }

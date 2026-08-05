@@ -16,7 +16,7 @@
 | AgentMemoryOS | TBD | native adapter | TBD | source-first assessment pending |
 | EngramFlow Runtime SPI | `0.1.0-dev` | Python protocol/registry | Experimental | PLAN-001 contract tests pending |
 | Hermes Agent | `1072c0725115e9be0491ca4cb0d965b9f5f59874` | structured cron result + source-pinned `post_cron_job` hook | Experimental | STAGE-003 accepted by EVID-004; production deployment not executed |
-| Hermes Agent (Bastet production baseline) | `d0c0a6b8fe5ff45bcb3d2ba34e596cca7100ed5a` | rebased `run_one_job` observer hook | TBD | STAGE-004 / PLAN-005 isolated validation active; old patch is incompatible |
+| Hermes Agent (Bastet production baseline) | `d0c0a6b8fe5ff45bcb3d2ba34e596cca7100ed5a` | rebased `run_one_job` observer hook | Experimental | STAGE-004 rollout readiness accepted by EVID-005; production deployment not executed |
 | Hermes Agent latest tag | TBD | compatibility lane | TBD | CI pending |
 | Hermes Agent main | moving | early-warning only | Experimental | non-release-gating lane pending |
 | Claude Code | TBD pinned version | Agent SDK/headless/MCP/hooks candidate | TBD | source-first assessment pending |

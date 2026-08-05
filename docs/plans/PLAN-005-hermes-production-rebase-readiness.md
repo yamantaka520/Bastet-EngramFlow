@@ -2,7 +2,7 @@
 id: PLAN-005
 title: Hermes production SHA rebase and isolated readiness validation
 type: plan
-status: active
+status: accepted
 owner: engineering
 created: 2026-08-05
 updated: 2026-08-05
@@ -12,6 +12,8 @@ related_stages:
   - STAGE-004
 related_adrs:
   - ADR-0005
+related_evidence:
+  - EVID-005
 ---
 
 # PLAN-005：Hermes production SHA rebase and isolated readiness validation
