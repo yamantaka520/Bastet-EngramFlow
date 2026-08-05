@@ -22,8 +22,9 @@ preflight evidence.
 These paths are proposals and are not created by STAGE-004 readiness work:
 
 - Bastet bridge venv: `/home/bastet/.hermes/bastet-engramflow-venv`
-- Durable reconciliation DB: `/home/bastet/.hermes/state/bastet-reconciliation.sqlite3`
+- Durable reconciliation DB: `/home/bastet/.hermes/state/bastet-engramflow/reconciliation.sqlite3`
 - Backups: `/home/bastet/.hermes/backups/post-cron-<UTC timestamp>/`
+- Isolated deployment test venv: `<timestamped-backup>/test-venv`
 
 The command registered in the hook must be the venv console script:
 
@@ -69,8 +70,14 @@ another user from reading the checkout.
    timestamped backup directory, preserving mode and ownership.
 3. Create the dedicated bridge venv with Python 3.11 and install the exact
    approved Bastet-EngramFlow release. Do not use the host `pip`, which targets
-   a different Python version.
-4. Create the durable state directory owned by `bastet`, mode `0700`.
+   a different Python version. Separately create an isolated test venv under the
+   timestamped backup and install the exact local Hermes checkout with its
+   pinned `dev` extra. The live Hermes runtime venv has no `pytest`; do not add
+   test dependencies to it.
+4. The existing `/home/bastet/.hermes/state/` contains the gateway heartbeat and
+   must not be replaced or globally chmodded. Create the dedicated
+   `/home/bastet/.hermes/state/bastet-engramflow/` subdirectory owned by
+   `bastet`, mode `0700`, and keep the SQLite file private.
 5. Apply the exact patch and run the production-source targeted tests before
    committing the source change. Before continuing, require both:
 

@@ -10,19 +10,30 @@ updated: 2026-08-05
 
 # Bastet-EngramFlow 專案狀態
 
-- 最後更新：2026-08-05 13:57 CST（UTC+8）
+- 最後更新：2026-08-05 14:41 CST（UTC+8）
 - 已完成階段：`STAGE-000` Runtime-neutral foundation
 - 已完成階段：`STAGE-001` Scheduled execution reconciliation core
 - 已完成階段：`STAGE-002` Durable reconciliation delivery
 - 已完成階段：`STAGE-003` Hermes production reconciliation hook integration
 - 已完成階段：`STAGE-004` production SHA reconciliation and rollout readiness
-- 目前狀態：production-SHA artifact與rollout readiness accepted；production deployment未授權、未執行
+- 目前階段：`STAGE-005` Bastet Hermes controlled production rollout（blocked）
+- 目前狀態：read-only deployment preflight accepted；production mutation等待明確approval與fixture/rollback inputs
 - 工作分支：`feat/hermes-production-reconciliation-hook`
 - Foundation commits：`ee4dc13afaf9ebf293dcfea848979b3762687cd8`、`4958b501869050b5bdbec33d299cbafc8cb87116`
 
 ## Active Goals
 
 - [GOAL-001](goals/GOAL-001-runtime-neutral-governed-continuation.md)：建立跨 Agent Runtime 的受治理主動專案延續能力。
+
+## Blocked STAGE-005 Deployment
+
+- [STAGE-005](stages/STAGE-005-bastet-hermes-controlled-production-rollout.md)：完整production changeset已界定，狀態`blocked`。
+- [PLAN-006](plans/PLAN-006-controlled-bastet-hermes-production-deployment.md)：backup、isolated runtime、patch/config/consent、restart、fixture與rollback計畫。
+- [EVID-006](evidence/EVID-006-bastet-hermes-production-deployment-preflight.md)：live patch `applicable`、service/source/config/runtime唯讀preflight。
+- [REVIEW-006](reviews/REVIEW-006-stage-005-production-deployment-approval-pack.md)：approval-pack final High 0 / Medium 0；不構成production approval。
+- Blocked inputs：明確deployment approval、maintenance window、named rollback operator、fixture cron job及原Telegram thread。
+- Runtime finding：live Hermes venv沒有pytest；必須使用isolated test venv，不污染production runtime。
+- Production boundary：尚未建立backup/venv/DB，未改source/config/systemd，未restart或觸發delivery。
 
 ## Accepted STAGE-004 Deliverables
 
@@ -80,7 +91,9 @@ updated: 2026-08-05
 
 ## Blockers
 
-- 無。
+- `APPROVAL-001`：尚未取得STAGE-005 production deployment明確批准與maintenance window。
+- `FIXTURE-001`：尚未指定fixture cron job、原Telegram conversation/thread及named rollback operator。
+- `TEST-RUNTIME-001`：live Hermes venv無pytest；批准後須先建立isolated test venv。
 
 ## Current Risks
 
@@ -92,10 +105,4 @@ updated: 2026-08-05
 
 ## Next Gate
 
-Production rollout必須另建Stage/Plan並取得明確核准，至少涵蓋：
-
-1. Snapshot與reconcile production Hermes dirty/diverged source及config，不直接覆蓋local changes。
-2. Dedicated Bastet venv、durable local SQLite path與exact shell-hook allowlist approval。
-3. 套patch前preflight、service maintenance window、baseline與patched smoke tests。
-4. 真實Telegram原thread delivery/read-back與next-turn context consumption。
-5. Queue pause/drain、crash/restart、duplicate delivery與reverse-patch rollback演練。
+解除STAGE-005 blockers後，依[RUNBOOK-001](runbooks/RUNBOOK-001-hermes-production-post-cron-rollout.md)執行固定changeset。未取得完整批准前不得建立production artifact、套patch、改config/systemd、restart service或觸發fixture delivery。

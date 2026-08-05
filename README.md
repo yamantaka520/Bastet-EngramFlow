@@ -3,7 +3,7 @@
 **Memory Resonance Runtime for Autonomous Agents**
 以記憶共鳴驅動自主 Agent 關聯、推理、提案、執行與驗證的開源架構。
 
-> 專案狀態：`STAGE-004` production SHA reconciliation and rollout readiness accepted；production deployment未授權、未執行
+> 專案狀態：`STAGE-005` production rollout blocked；等待明確deployment approval與fixture/rollback inputs
 
 ## 願景
 
@@ -51,7 +51,7 @@ Memory → Resonance → Proposal → Policy → Execution → Verification → 
 
 ## 快速狀態
 
-`STAGE-000` 至 `STAGE-004` 已完成驗收。Current core 提供 SQLite durable ledger/outbox、lease recovery、canonical payload byte limit，以及雙source-pinned Hermes `post_cron_job` variants、strict shell bridge與hermetic target test runner；production rollout readiness已驗證，但production Hermes checkout、config、service與真實Telegram API delivery仍未部署。即時進度以 `docs/PROJECT_STATUS.md` 為準。
+`STAGE-000` 至 `STAGE-004` 已完成驗收；`STAGE-005`已完成read-only preflight，因production deployment approval、fixture與rollback inputs尚缺而blocked。Current core提供SQLite durable ledger/outbox、雙source-pinned Hermes `post_cron_job` variants、strict shell bridge與hermetic target test runner。即時進度以`docs/PROJECT_STATUS.md`為準。
 
 ## License
 
