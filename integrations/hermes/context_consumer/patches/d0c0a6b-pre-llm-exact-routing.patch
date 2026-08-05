@@ -1,0 +1,13 @@
+diff --git a/agent/turn_context.py b/agent/turn_context.py
+index ac9555d012e4b4ecd1faf4799821a197fa061351..55f7ef0ceb3076a4f20cffa5d1b4064bff1e9833 100644
+--- a/agent/turn_context.py
++++ b/agent/turn_context.py
+@@ -1042,6 +1042,8 @@ def build_turn_context(
+             model=agent.model,
+             platform=getattr(agent, "platform", None) or "",
+             sender_id=getattr(agent, "_user_id", None) or "",
++            conversation_id=getattr(agent, "_chat_id", None),
++            thread_id=getattr(agent, "_thread_id", None),
+         )
+         _ctx_parts: list[str] = []
+         # Spill oversized per-hook context to disk so a runaway plugin

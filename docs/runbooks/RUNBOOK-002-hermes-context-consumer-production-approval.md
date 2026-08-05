@@ -16,6 +16,21 @@ Status: **NOT AUTHORIZED**. This document is a future-stage checklist, not permi
 
 Any change in service owner, checkout, HEAD, source patch state or hook contract is a stop condition and requires a new compatibility review.
 
+## STAGE-009 verified artifacts (still NOT AUTHORIZED)
+
+- Bastet-EngramFlow source commit before STAGE-009 closure: `389d88fa8f35af7a260dbb795f007c79684aba3f`; final release commit remains pending publication.
+- Reproducible release wheel: `bastet_engramflow-0.1.0.dev0-py3-none-any.whl`, SHA-256 `3791465422639feb80e8a6fd459cb575839029bcf1cad28a871e105379c018d7`, built from an isolated source copy with `SOURCE_DATE_EPOCH=315532800`; two builds were byte-identical and a clean-venv plugin smoke passed.
+- Hermes base commit: `d0c0a6b8fe5ff45bcb3d2ba34e596cca7100ed5a`.
+- Existing post-cron prerequisite patch SHA-256: `af1d421f0b33ee06e14dae9bfca20e4c5490e13c28f78b76dbb9979614cc65dc`; live state verified `applied`.
+- Exact-routing compatibility patch SHA-256: `1741f6c7d77d0cb13c1dfcb74cb8acc18a5db054a2999fb6c588bc075c4f1eda`; changed path allowlist contains only `agent/turn_context.py`; live state verified `applicable` and isolated state `applied`.
+- Plugin init SHA-256: `825d5179d8150a9e3049028f3e1cbc8088b1810e282d2faaa8169fac88ff2b67`.
+- Plugin manifest SHA-256: `08e26d49ff8343ae1ca31736dcb096fb6262f1dba1729bf17e78d6b1d17199e2`.
+- Canonical compatibility runner: `integrations/hermes/context_consumer/run_tests.py`; isolated exact-source result: 3 tests PASS.
+- Read-only production state: local ext-family filesystem, integration directory mode `0700`, source DB mode `0600`, delivery DB absent; source outbox has one pending item with attempts zero and no lease.
+- The existing pending source item is **not** an approved canary and must receive an explicit per-item disposition outside this public repository before deployment.
+
+The following approval fields remain intentionally unresolved: maintenance window/approver, backup and rollback operators/paths, exact delivery DB path, dispatcher/consumer ownership, existing pending item disposition, exact canary conversation/thread, observation period and rollback authority. Any unresolved field means NOT APPROVED.
+
 ## Approval record required before any mutation
 
 Record all fields; any blank field means NOT APPROVED:
@@ -104,4 +119,4 @@ The patch must not infer conversation from`sender_id`, fake an incoming message,
 
 ## Production boundary
 
-STAGE-008 does not authorize any step under Backup, Deployment or Rollback. It does not create the delivery DB, patch Hermes, install a plugin, enable the dispatcher/consumer, restart the service, claim an item or call Telegram/platform APIs.
+STAGE-008 and STAGE-009 do not authorize any step under Backup, Deployment or Rollback. They do not create the delivery DB, patch Hermes, install a plugin, enable the dispatcher/consumer, restart the service, claim an item or call Telegram/platform APIs.

@@ -17,8 +17,8 @@ class HermesPreLLMContextConsumer:
 
     Register :meth:`pre_llm_call` as a Hermes plugin hook. Older Hermes builds
     that do not supply ``conversation_id`` fail closed: the callback returns
-    ``None`` and does not claim a row. ``thread_id`` may be empty only to denote
-    a non-threaded conversation.
+    ``None`` and does not claim a row. Only ``thread_id=None`` denotes a
+    non-threaded conversation; an explicitly supplied empty string is invalid.
 
     The durable row is completed immediately before returning the context to
     Hermes. A process crash after ``begin_context_delivery`` but before durable

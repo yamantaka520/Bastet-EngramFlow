@@ -1,0 +1,10 @@
+name: bastet-context-consumer
+version: 0.1.0
+description: "Fail-closed exact-routing Bastet reconciliation context consumer."
+author: "Bastet-EngramFlow maintainers"
+kind: standalone
+requires_env:
+  - BASTET_HERMES_DELIVERY_DB
+  - BASTET_HERMES_CONSUMER_OWNER
+hooks:
+  - pre_llm_call

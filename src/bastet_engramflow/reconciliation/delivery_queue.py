@@ -97,6 +97,41 @@ class SQLiteHermesDeliveryQueue:
         busy_timeout_ms: int = 5000,
         max_payload_bytes: int = 262_144,
     ) -> None:
+        self._configure(
+            path,
+            busy_timeout_ms=busy_timeout_ms,
+            max_payload_bytes=max_payload_bytes,
+        )
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self._initialize()
+
+    @classmethod
+    def open_existing(
+        cls,
+        path: str | Path,
+        *,
+        busy_timeout_ms: int = 5000,
+        max_payload_bytes: int = 262_144,
+    ) -> SQLiteHermesDeliveryQueue:
+        """Open an initialized queue without creating directories or migrating schema."""
+
+        instance = cls.__new__(cls)
+        instance._configure(
+            path,
+            busy_timeout_ms=busy_timeout_ms,
+            max_payload_bytes=max_payload_bytes,
+        )
+        if not instance.path.is_file():
+            raise FileNotFoundError(instance.path)
+        return instance
+
+    def _configure(
+        self,
+        path: str | Path,
+        *,
+        busy_timeout_ms: int,
+        max_payload_bytes: int,
+    ) -> None:
         self.path = Path(path)
         self.busy_timeout_ms = busy_timeout_ms
         self.max_payload_bytes = max_payload_bytes
@@ -104,8 +139,6 @@ class SQLiteHermesDeliveryQueue:
             raise ValueError("busy_timeout_ms must be positive")
         if max_payload_bytes < 1:
             raise ValueError("max_payload_bytes must be positive")
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        self._initialize()
 
     def _connect(self) -> sqlite3.Connection:
         connection = sqlite3.connect(

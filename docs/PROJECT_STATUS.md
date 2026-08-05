@@ -10,7 +10,7 @@ updated: 2026-08-05
 
 # Bastet-EngramFlow 專案狀態
 
-- 最後更新：2026-08-05 18:53 CST（UTC+8）
+- 最後更新：2026-08-05 23:56 CST（UTC+8）
 - 已完成階段：`STAGE-000` Runtime-neutral foundation
 - 已完成階段：`STAGE-001` Scheduled execution reconciliation core
 - 已完成階段：`STAGE-002` Durable reconciliation delivery
@@ -19,14 +19,24 @@ updated: 2026-08-05
 - 已完成階段：`STAGE-005` Bastet Hermes controlled production rollout
 - 已完成階段：`STAGE-006` reconciliation outbox shadow inspection
 - 已完成階段：`STAGE-007` fail-closed reconciliation dispatcher readiness
-- 目前階段：`STAGE-008` fail-closed Hermes context consumer readiness（accepted）
-- 目前狀態：兩階段context consumer、91-test full gate及final review accepted；production dispatcher/consumer/patch仍未批准
+- 已完成階段：`STAGE-008` fail-closed Hermes context consumer readiness
+- 目前階段：`STAGE-009` Hermes context consumer production artifact readiness（accepted）
+- 目前狀態：source-pinned patch/plugin、live只讀preflight、100-test full gate、reproducible wheel與final independent review均完成；repository artifacts ACCEPT，production deployment仍WITHHELD
 - 工作分支：`feat/hermes-production-reconciliation-hook`
 - Foundation commits：`ee4dc13afaf9ebf293dcfea848979b3762687cd8`、`4958b501869050b5bdbec33d299cbafc8cb87116`
 
 ## Active Goals
 
 - [GOAL-001](goals/GOAL-001-runtime-neutral-governed-continuation.md)：建立跨 Agent Runtime 的受治理主動專案延續能力。
+
+## Accepted STAGE-009 Deliverables
+
+- [STAGE-009](stages/STAGE-009-hermes-context-consumer-production-artifact-readiness.md)：source-pinned compatibility patch、plugin與production artifact readiness；不構成deployment approval。
+- [PLAN-010](plans/PLAN-010-source-pinned-hermes-context-consumer-production-artifacts.md)：只讀preflight、TDD artifacts、digest manifest與canonical runner。
+- [EVID-011](evidence/EVID-011-hermes-context-consumer-production-artifact-readiness.md)：live read-back、plugin RED→GREEN、100-test full gate、wheel及source-pinned compatibility evidence。
+- [REVIEW-011](reviews/REVIEW-011-stage-009-hermes-context-consumer-production-artifact-readiness.md)：final High 0 / Medium 0 / Low 2 non-blocking；repository artifact readiness ACCEPT、production WITHHELD。
+- [RUNBOOK-002](runbooks/RUNBOOK-002-hermes-context-consumer-production-approval.md)：artifact欄位已固定，但production仍為NOT AUTHORIZED。
+- Production boundary：未套patch、未安裝plugin、未建立delivery DB、未claim既有pending item、未restart service或執行platform canary。
 
 ## Accepted STAGE-008 Deliverables
 

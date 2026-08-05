@@ -1,0 +1,52 @@
+{
+  "integration": "bastet-hermes-pre-llm-context-consumer",
+  "schema_version": "bastet.hermes_context_consumer.v1",
+  "hermes_base_commit": "d0c0a6b8fe5ff45bcb3d2ba34e596cca7100ed5a",
+  "patch_file": "patches/d0c0a6b-pre-llm-exact-routing.patch",
+  "patch_sha256": "1741f6c7d77d0cb13c1dfcb74cb8acc18a5db054a2999fb6c588bc075c4f1eda",
+  "changed_paths": [
+    "agent/turn_context.py"
+  ],
+  "source_pinned_tests": [
+    {
+      "path": "tests/test_pre_llm_exact_routing_d0c0a6b.py",
+      "sha256": "a5cb7fe867f578a68df745f498f10a5693416ca5a87f3e2814a68f1f19217071"
+    },
+    {
+      "path": "tests/test_plugin_load_d0c0a6b.py",
+      "sha256": "5349c0197f84d9e323d70a1f7b73e5892b82d6a264c1c25acba3a1d0c6561612"
+    }
+  ],
+  "plugin": {
+    "name": "bastet-context-consumer",
+    "files": [
+      {
+        "path": "plugin/bastet-context-consumer/__init__.py",
+        "sha256": "825d5179d8150a9e3049028f3e1cbc8088b1810e282d2faaa8169fac88ff2b67"
+      },
+      {
+        "path": "plugin/bastet-context-consumer/plugin.yaml",
+        "sha256": "08e26d49ff8343ae1ca31736dcb096fb6262f1dba1729bf17e78d6b1d17199e2"
+      }
+    ],
+    "required_environment": [
+      "BASTET_HERMES_DELIVERY_DB",
+      "BASTET_HERMES_CONSUMER_OWNER"
+    ]
+  },
+  "release_wheel": {
+    "filename": "bastet_engramflow-0.1.0.dev0-py3-none-any.whl",
+    "sha256": "3791465422639feb80e8a6fd459cb575839029bcf1cad28a871e105379c018d7",
+    "source_date_epoch": 315532800
+  },
+  "production_prerequisite": {
+    "integration": "hermes-post-cron-job-hook",
+    "variant": "production-d0c0a6b",
+    "patch_sha256": "af1d421f0b33ee06e14dae9bfca20e4c5490e13c28f78b76dbb9979614cc65dc",
+    "dirty_paths": [
+      "cron/scheduler.py",
+      "hermes_cli/plugins.py",
+      "tests/cron/test_post_cron_hook.py"
+    ]
+  }
+}

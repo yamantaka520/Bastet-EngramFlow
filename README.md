@@ -3,7 +3,7 @@
 **Memory Resonance Runtime for Autonomous Agents**
 以記憶共鳴驅動自主 Agent 關聯、推理、提案、執行與驗證的開源架構。
 
-> 專案狀態：`STAGE-008` accepted；fail-closed Hermes context consumer repository readiness已驗收，production dispatcher/consumer/patch仍未批准
+> 專案狀態：`STAGE-009` accepted；source-pinned Hermes context consumer production artifacts已通過100-test full gate與final review，production deployment仍未批准
 
 ## 願景
 
@@ -51,7 +51,7 @@ Memory → Resonance → Proposal → Policy → Execution → Verification → 
 
 ## 快速狀態
 
-`STAGE-000`至`STAGE-007`已完成repository驗收。Bastet production Hermes已部署source-pinned`post_cron_job` observer hook與dedicated bridge/SQLite。STAGE-008新增exact-routed、fail-closed的pre-LLM context consumer及ambiguous quarantine，但尚未獲准建立production delivery DB、執行dispatcher、套Hermes patch、安裝consumer或claim item。即時進度以`docs/PROJECT_STATUS.md`為準。
+`STAGE-000`至`STAGE-009`已完成repository驗收。Bastet production Hermes已部署source-pinned`post_cron_job` observer hook與dedicated bridge/SQLite；STAGE-009只接受exact-routing compatibility patch、fail-closed user plugin、digest manifest、reproducible wheel與canonical source-pinned runner。Production仍未獲准建立delivery DB、執行dispatcher、套Hermes patch、安裝consumer、claim既有item或restart service。即時進度以`docs/PROJECT_STATUS.md`為準。
 
 ## License
 
