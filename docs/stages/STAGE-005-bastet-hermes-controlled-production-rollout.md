@@ -3,7 +3,7 @@ id: STAGE-005
 title: Bastet Hermes controlled production rollout
 spec_version: "0.1"
 type: stage
-status: blocked
+status: accepted
 owner: engineering
 created: 2026-08-05
 updated: 2026-08-05
@@ -46,11 +46,13 @@ related_adrs:
 
 任何額外source、provider、model、credential、routing或production job變更都不在本Stage授權範圍。
 
-## Current blockers
+## Resolved blockers
 
-- `APPROVAL-001`：尚未取得明確production deployment批准、maintenance window及named rollback operator。
-- `TEST-RUNTIME-001`：production Hermes venv沒有pytest；deployment必須先在timestamped backup下建立isolated test venv並安裝exact local Hermes `dev` extra，不得把pytest裝進live runtime venv。
-- `FIXTURE-001`：尚未指定唯一fixture cron job及預期原Telegram conversation/thread。
+- `APPROVAL-001`：使用者明確批准現在執行完整changeset；小NEO為named rollback operator。
+- `TEST-RUNTIME-001`：timestamped backup下的isolated test venv通過358 tests；live runtime venv未安裝pytest。
+- `FIXTURE-001`：gateway-scheduled `ecca3943fd75`回傳目前Telegram DM `8686567559`，origin及dedup read-back通過。
+
+完整production evidence見[EVID-007](../evidence/EVID-007-bastet-hermes-controlled-production-rollout.md)。
 
 ## Exit criteria
 
@@ -61,4 +63,5 @@ related_adrs:
 - Hook event、Bastet ledger/outbox、dedup replay與original-thread routing read-back通過。
 - 無其他production jobs被fixture驗證觸發。
 - Rollback演練或可逆性read-back完成且保留audit evidence。
+- [REVIEW-007](../reviews/REVIEW-007-stage-005-production-rollout-closure.md)已接受，open High/Medium均為0；治理例外與受控維運風險有明確disposition。
 - EVID-007與REVIEW-007完成後，Stage才可轉為accepted。

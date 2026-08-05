@@ -1,8 +1,8 @@
 # Bastet-EngramFlow 專案計畫
 
-- 文件版本：`0.7.0`
-- 更新時間：2026-08-05 14:41 CST（UTC+8）
-- 專案狀態：STAGE-005 blocked / production deployment approval required
+- 文件版本：`0.8.0`
+- 更新時間：2026-08-05 15:10 CST（UTC+8）
+- 專案狀態：STAGE-005 accepted / Bastet Hermes production observer hook deployed
 - Repository：`yamantaka520/Bastet-EngramFlow`
 - 授權：Apache-2.0
 

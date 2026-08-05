@@ -10,14 +10,14 @@ updated: 2026-08-05
 
 # Bastet-EngramFlow 專案狀態
 
-- 最後更新：2026-08-05 14:41 CST（UTC+8）
+- 最後更新：2026-08-05 15:10 CST（UTC+8）
 - 已完成階段：`STAGE-000` Runtime-neutral foundation
 - 已完成階段：`STAGE-001` Scheduled execution reconciliation core
 - 已完成階段：`STAGE-002` Durable reconciliation delivery
 - 已完成階段：`STAGE-003` Hermes production reconciliation hook integration
 - 已完成階段：`STAGE-004` production SHA reconciliation and rollout readiness
-- 目前階段：`STAGE-005` Bastet Hermes controlled production rollout（blocked）
-- 目前狀態：read-only deployment preflight accepted；production mutation等待明確approval與fixture/rollback inputs
+- 已完成階段：`STAGE-005` Bastet Hermes controlled production rollout
+- 目前狀態：production observer hook deployed；durable ledger/outbox、Telegram DM origin及dedup read-back accepted
 - 工作分支：`feat/hermes-production-reconciliation-hook`
 - Foundation commits：`ee4dc13afaf9ebf293dcfea848979b3762687cd8`、`4958b501869050b5bdbec33d299cbafc8cb87116`
 
@@ -25,15 +25,16 @@ updated: 2026-08-05
 
 - [GOAL-001](goals/GOAL-001-runtime-neutral-governed-continuation.md)：建立跨 Agent Runtime 的受治理主動專案延續能力。
 
-## Blocked STAGE-005 Deployment
+## Accepted STAGE-005 Deployment
 
-- [STAGE-005](stages/STAGE-005-bastet-hermes-controlled-production-rollout.md)：完整production changeset已界定，狀態`blocked`。
-- [PLAN-006](plans/PLAN-006-controlled-bastet-hermes-production-deployment.md)：backup、isolated runtime、patch/config/consent、restart、fixture與rollback計畫。
-- [EVID-006](evidence/EVID-006-bastet-hermes-production-deployment-preflight.md)：live patch `applicable`、service/source/config/runtime唯讀preflight。
-- [REVIEW-006](reviews/REVIEW-006-stage-005-production-deployment-approval-pack.md)：approval-pack final High 0 / Medium 0；不構成production approval。
-- Blocked inputs：明確deployment approval、maintenance window、named rollback operator、fixture cron job及原Telegram thread。
-- Runtime finding：live Hermes venv沒有pytest；必須使用isolated test venv，不污染production runtime。
-- Production boundary：尚未建立backup/venv/DB，未改source/config/systemd，未restart或觸發delivery。
+- [STAGE-005](stages/STAGE-005-bastet-hermes-controlled-production-rollout.md)：production changeset已部署，狀態`accepted`。
+- [PLAN-006](plans/PLAN-006-controlled-bastet-hermes-production-deployment.md)：backup、isolated runtime、patch/config/consent、restart、fixture與rollback驗證已完成。
+- [EVID-006](evidence/EVID-006-bastet-hermes-production-deployment-preflight.md)：deployment前read-only preflight。
+- [REVIEW-006](reviews/REVIEW-006-stage-005-production-deployment-approval-pack.md)：批准包High 0 / Medium 0。
+- [EVID-007](evidence/EVID-007-bastet-hermes-controlled-production-rollout.md)：358-test source gate、service/config/consent、gateway fixture origin及dedup production read-back。
+- [REVIEW-007](reviews/REVIEW-007-stage-005-production-rollout-closure.md)：final open High 0 / Medium 0；1項治理例外及1項受控維運風險已記錄。
+- Runtime：live Hermes venv未污染；test venv位於timestamped backup，bridge使用exact release wheel。
+- Production：service active，patch applied，exact hook consent 1筆，private SQLite durable enqueue有效。
 
 ## Accepted STAGE-004 Deliverables
 
@@ -91,18 +92,17 @@ updated: 2026-08-05
 
 ## Blockers
 
-- `APPROVAL-001`：尚未取得STAGE-005 production deployment明確批准與maintenance window。
-- `FIXTURE-001`：尚未指定fixture cron job、原Telegram conversation/thread及named rollback operator。
-- `TEST-RUNTIME-001`：live Hermes venv無pytest；批准後須先建立isolated test venv。
+- 無。
 
 ## Current Risks
 
 - SQLite reference store為單一filesystem/database boundary；NFS/多主機locking與HA尚未宣告支援。
 - Delivery為at-least-once；sink仍須以persisted event/proposal ID去重。
 - Hermes run UUID只在單一emitted payload內穩定，不代表跨job re-execution business identity。
-- Source-pinned integration已驗證，但production checkout/config/service與真實Telegram API delivery尚未部署或read-back。
+- Source-pinned production integration已部署並完成真實Telegram delivery、origin及dedup read-back；未啟動的outbox dispatcher仍需另立Stage與approval。
+- Production Hermes目前為base SHA加manifest-owned local patch，而非immutable deployment commit；upstream upgrade前必須先做verifier、changed-path及rollback preflight。
 - Remediation proposal只入queue，不代表已批准、已執行或已驗證。
 
 ## Next Gate
 
-解除STAGE-005 blockers後，依[RUNBOOK-001](runbooks/RUNBOOK-001-hermes-production-post-cron-rollout.md)執行固定changeset。未取得完整批准前不得建立production artifact、套patch、改config/systemd、restart service或觸發fixture delivery。
+另立Stage/Plan設計production reconciliation outbox dispatcher、conversation sink與shadow-mode觀測。Pending outbox不代表已delivery或已remediation；任何dispatcher啟用、自動提案或production side effect仍需明確批准。

@@ -1,6 +1,6 @@
 # Bastet Hermes `post_cron_job` Production Rollout Runbook
 
-Status: readiness-only; execution requires explicit production approval.
+Status: production rollout accepted; future mutation still requires explicit approval.
 
 ## Fixed scope
 
@@ -65,21 +65,26 @@ another user from reading the checkout.
 
 ## Mutation sequence (not authorized by STAGE-004)
 
-1. Stop `hermes-bastet.service` and verify it is inactive.
+1. Stop `hermes-bastet.service` and verify `MainPID=0` and state is not
+   `active`. On this production unit, a normal stop can exit `1` and leave the
+   stopped unit in systemd `failed`; after confirming `MainPID=0`, run
+   `systemctl reset-failed hermes-bastet.service` before continuing.
 2. Copy `config.yaml` and `shell-hooks-allowlist.json` (when present) to the
    timestamped backup directory, preserving mode and ownership.
-3. Create the dedicated bridge venv with Python 3.11 and install the exact
-   approved Bastet-EngramFlow release. Do not use the host `pip`, which targets
-   a different Python version. Separately create an isolated test venv under the
-   timestamped backup and install the exact local Hermes checkout with its
-   pinned `dev` extra. The live Hermes runtime venv has no `pytest`; do not add
-   test dependencies to it.
+3. Create the dedicated bridge venv with Python 3.11 and install a wheel built
+   from `git archive` of the exact approved Bastet-EngramFlow release. Do not
+   build directly in a NAS checkout when the service owner cannot write its
+   generated `egg-info`, and do not use the host `pip`, which targets a
+   different Python version. Separately create an isolated test venv under the
+   timestamped backup. A verified low-downtime method is to copy the live venv,
+   then install pinned pytest dependencies only into the copy. The live Hermes
+   runtime venv has no `pytest`; do not add test dependencies to it.
 4. The existing `/home/bastet/.hermes/state/` contains the gateway heartbeat and
    must not be replaced or globally chmodded. Create the dedicated
    `/home/bastet/.hermes/state/bastet-engramflow/` subdirectory owned by
    `bastet`, mode `0700`, and keep the SQLite file private.
 5. Apply the exact patch and run the production-source targeted tests before
-   committing the source change. Before continuing, require both:
+   continuing with config or service startup. Before continuing, require both:
 
 ```bash
 python3 integrations/hermes/verify_patch.py \
@@ -98,8 +103,12 @@ sudo -n -u bastet git -C /home/bastet/.hermes/hermes-agent \
 hooks:
   post_cron_job:
     - command: /home/bastet/.hermes/bastet-engramflow-venv/bin/bastet-hermes-post-cron
-      timeout: 20
+      timeout: 30
 ```
+
+Keep `hooks_auto_accept: false` explicit. Record consent by loading this config
+once with `register_from_config(..., accept_hooks=True)` in a controlled process;
+this writes the exact allowlist pair without executing a synthetic hook.
 
 7. Add `BASTET_RECONCILIATION_DB` to the service environment using a systemd
    drop-in or an existing non-secret env file. Do not place credentials in the
@@ -119,9 +128,14 @@ systemctl show hermes-bastet.service -p MainPID -p ExecMainStartTimestamp --no-p
 sudo -n -u bastet git -C /home/bastet/.hermes/hermes-agent status --short --branch
 ```
 
-Then execute one explicitly named fixture cron job targeted to the original
-Telegram conversation/thread. Verify all of the following without printing raw
-prompts or credentials:
+Then execute one explicitly named, one-shot, no-agent fixture through the
+**gateway scheduler** and target the original Telegram conversation/thread.
+Do not use CLI `cron run` as the production-env fixture: the direct CLI process
+does not inherit systemd-only `BASTET_RECONCILIATION_DB`. Also ensure the job
+stores an `origin` object and uses `deliver=origin`; an explicit CLI `--deliver`
+target alone can deliver successfully while the hook payload still has
+`origin=null`. Verify all of the following without printing raw prompts or
+credentials:
 
 - Hermes ledger has one terminal execution ID.
 - Bastet reconciliation DB has one matching run and one outbox item.

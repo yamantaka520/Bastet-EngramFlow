@@ -2,7 +2,7 @@
 id: PLAN-006
 title: Controlled Bastet Hermes production deployment and rollback verification
 type: plan
-status: blocked
+status: accepted
 owner: engineering
 created: 2026-08-05
 updated: 2026-08-05
@@ -14,6 +14,7 @@ related_adrs:
   - ADR-0005
 related_evidence:
   - EVID-006
+  - EVID-007
 ---
 
 # PLAN-006：Controlled Bastet Hermes production deployment and rollback verification
@@ -76,6 +77,10 @@ STAGE-004只接受production-SHA rollout readiness，production尚未安裝bridg
 
 依`RUNBOOK-001`執行，核心stop conditions為：HEAD/dirty drift、patch state非預期、changed path超出manifest、target tests失敗、service不active、duplicate outbox、thread routing遺失或consent超範圍。
 
-## Blocked until
+## Outcome
 
-使用者明確批准完整changeset，並指定maintenance window、rollback operator、fixture cron job及其原Telegram conversation/thread。
+- 使用者已明確批准完整changeset、maintenance window、rollback operator及目前Telegram DM fixture target。
+- Timestamped backup、isolated test runtime、exact release bridge wheel、source patch、config/consent/state/systemd、restart與production read-back已完成。
+- 358-test target gate、gateway fixture origin及same-payload dedup均通過。
+- Initial stop-state mismatch觸發rollback trap並成功恢復service/source，提供實際可逆性證據。
+- 詳細結果與兩次未被誤認為成功的fixture diagnostic attempt見EVID-007。

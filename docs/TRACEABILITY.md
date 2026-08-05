@@ -57,7 +57,7 @@ GOAL → STAGE → PLAN → ADR/SPEC → IMPLEMENTATION → EVIDENCE → REVIEW/
 | GOAL-001 | STAGE-002 | PLAN-003 | 0004 | EVID-003 | accepted |
 | GOAL-001 | STAGE-003 | PLAN-004 | 0005 | EVID-004 | accepted |
 | GOAL-001 | STAGE-004 | PLAN-005 | 0005 | EVID-005 | accepted |
-| GOAL-001 | STAGE-005 | PLAN-006 | 0005 | EVID-006 | blocked pending deployment approval |
+| GOAL-001 | STAGE-005 | PLAN-006 | 0005 | EVID-007 | accepted |
 
 ## 6. 自動化檢查目標
 
