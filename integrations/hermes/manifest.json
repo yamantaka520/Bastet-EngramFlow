@@ -1,0 +1,15 @@
+{
+  "integration": "hermes-post-cron-job-hook",
+  "schema_version": "hermes.post_cron_job.v1",
+  "hermes_base_commit": "1072c0725115e9be0491ca4cb0d965b9f5f59874",
+  "patch_file": "patches/1072c0725-post-cron-job-hook.patch",
+  "patch_sha256": "2fa36a110d7dcf9a3fb5846ede59c95a5162edbea6f4c792b7026079a7d30c5b",
+  "upstream_files": [
+    "cron/scheduler.py",
+    "hermes_cli/plugins.py"
+  ],
+  "fixture_tests": [
+    "tests/test_post_cron_hook.py",
+    "tests/test_shell_bridge_e2e.py"
+  ]
+}

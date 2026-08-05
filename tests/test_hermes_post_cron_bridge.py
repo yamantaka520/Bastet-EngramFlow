@@ -106,6 +106,34 @@ class HermesPostCronBridgeTests(unittest.TestCase):
 
         self.assertEqual(SQLiteReconciliationStore(self.db_path).list_outbox(), ())
 
+    def test_rejects_unknown_payload_and_origin_fields(self) -> None:
+        with self.assertRaisesRegex(BridgeInputError, "unknown fields"):
+            self.bridge().enqueue_payload(self.payload(unexpected="drift"))
+        with self.assertRaisesRegex(BridgeInputError, "unknown fields"):
+            self.bridge().enqueue_payload(
+                self.payload(
+                    origin={
+                        "platform": "telegram",
+                        "conversation_id": "1",
+                        "extra": "drift",
+                    }
+                )
+            )
+        self.assertEqual(SQLiteReconciliationStore(self.db_path).list_outbox(), ())
+
+    def test_allows_telemetry_and_persists_only_sanitized_artifact_name(self) -> None:
+        self.bridge().enqueue_payload(
+            self.payload(
+                telemetry_schema_version="observer.v1",
+                output_path="/home/neo/private/api_key=top-secret.md",
+            )
+        )
+        item = SQLiteReconciliationStore(self.db_path).list_outbox()[0]
+        artifact = json.loads(item.payload)["artifacts"][0]
+        self.assertEqual(artifact["uri"], "api_key=[REDACTED]")
+        self.assertNotIn("/home/neo", artifact["uri"])
+        self.assertNotIn("top-secret", artifact["uri"])
+
     def test_rejects_non_object_wire_payload(self) -> None:
         with self.assertRaisesRegex(BridgeInputError, "JSON object"):
             self.bridge().enqueue_wire_json("[]")

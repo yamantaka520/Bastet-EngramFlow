@@ -3,7 +3,7 @@
 **Memory Resonance Runtime for Autonomous Agents**
 以記憶共鳴驅動自主 Agent 關聯、推理、提案、執行與驗證的開源架構。
 
-> 專案狀態：`STAGE-003` Hermes production reconciliation hook integration active
+> 專案狀態：`STAGE-003` Hermes production reconciliation hook integration accepted；production deployment未執行
 
 ## 願景
 
@@ -51,7 +51,7 @@ Memory → Resonance → Proposal → Policy → Execution → Verification → 
 
 ## 快速狀態
 
-`STAGE-000`、`STAGE-001` 與 `STAGE-002` 已完成驗收。Current core 提供 SQLite durable ledger/outbox、lease recovery、canonical payload byte limit 與 Hermes structured adapter contracts；這仍是 reference integration seam，尚未修改或部署 Hermes production scheduler/gateway hook。即時進度以 `docs/PROJECT_STATUS.md` 為準。
+`STAGE-000` 至 `STAGE-003` 已完成驗收。Current core 提供 SQLite durable ledger/outbox、lease recovery、canonical payload byte limit，以及 source-pinned Hermes `post_cron_job` observer hook與strict shell bridge；production Hermes checkout、config、service與真實Telegram API delivery仍未部署。即時進度以 `docs/PROJECT_STATUS.md` 為準。
 
 ## License
 

@@ -1,8 +1,8 @@
 # Bastet-EngramFlow 專案計畫
 
-- 文件版本：`0.5.0`
-- 更新時間：2026-08-05 09:30 CST（UTC+8）
-- 專案狀態：STAGE-003 active / Hermes production reconciliation hook integration
+- 文件版本：`0.5.1`
+- 更新時間：2026-08-05 12:37 CST（UTC+8）
+- 專案狀態：STAGE-003 accepted / source-pinned integration complete / production deployment not executed
 - Repository：`yamantaka520/Bastet-EngramFlow`
 - 授權：Apache-2.0
 

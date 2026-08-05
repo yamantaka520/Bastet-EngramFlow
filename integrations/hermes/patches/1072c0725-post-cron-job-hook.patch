@@ -1,0 +1,169 @@
+diff --git a/cron/scheduler.py b/cron/scheduler.py
+index 91671b46e..79326f241 100644
+--- a/cron/scheduler.py
++++ b/cron/scheduler.py
+@@ -14,9 +14,11 @@ import contextvars
+ import json
+ import logging
+ import os
++import re
+ import shutil
+ import subprocess
+ import sys
++import uuid
+ from contextlib import contextmanager
+ 
+ # fcntl is Unix-only; on Windows use msvcrt for file locking
+@@ -1888,6 +1890,99 @@ def _run_job_impl(job: dict) -> tuple[bool, str, str, Optional[str]]:
+             logger.debug("Job '%s': failed to reap stale auxiliary clients: %s", job_id, e)
+ 
+ 
++_POST_CRON_HOOK_SCHEMA = "hermes.post_cron_job.v1"
++_POST_CRON_HOOK_MAX_TEXT_CHARS = 4000
++_POST_CRON_SECRET_PATTERNS = (
++    re.compile(
++        r"(?i)\b(api[_-]?key|access[_-]?token|refresh[_-]?token|password|secret)"
++        r"\s*[:=]\s*([^\s,;]+)"
++    ),
++    re.compile(r"(?i)\bBearer\s+[A-Za-z0-9._~+/=-]+"),
++    re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
++)
++
++
++def _sanitize_post_cron_hook_text(value) -> Optional[str]:
++    """Bound and redact untrusted text before it crosses the hook boundary."""
++    if value is None:
++        return None
++    text = str(value)
++    text = "".join(
++        character if character in "\n\t" or ord(character) >= 32 else " "
++        for character in text
++    )
++    text = _POST_CRON_SECRET_PATTERNS[0].sub(r"\1=[REDACTED]", text)
++    text = _POST_CRON_SECRET_PATTERNS[1].sub("Bearer [REDACTED]", text)
++    text = _POST_CRON_SECRET_PATTERNS[2].sub("[REDACTED]", text)
++    if len(text) > _POST_CRON_HOOK_MAX_TEXT_CHARS:
++        text = text[:_POST_CRON_HOOK_MAX_TEXT_CHARS] + "...[truncated]"
++    return text
++
++
++def _post_cron_hook_artifact_name(output_path: object) -> Optional[str]:
++    """Expose only a sanitized basename, never a host-local absolute path."""
++    if not output_path:
++        return None
++    name = Path(str(output_path).replace("\\", "/")).name
++    return _sanitize_post_cron_hook_text(name)
++
++
++def _post_cron_hook_origin(job: dict) -> Optional[dict]:
++    origin = _resolve_origin(job)
++    if not origin:
++        return None
++    thread_id = origin.get("thread_id")
++    return {
++        "platform": str(origin["platform"])[:64],
++        "conversation_id": str(origin["chat_id"])[:256],
++        "thread_id": str(thread_id)[:256] if thread_id is not None else None,
++    }
++
++
++def _emit_post_cron_job_hook(
++    *,
++    job: dict,
++    run_id: str,
++    success: bool,
++    final_response: str,
++    error: Optional[str],
++    delivery_error: Optional[str],
++    output_path,
++) -> None:
++    """Emit one observer-only cron result event; never alter cron status."""
++    try:
++        from hermes_cli.plugins import has_hook, invoke_hook
++
++        if not has_hook("post_cron_job"):
++            return
++        continuation_depth = job.get("continuation_depth", 0)
++        if not isinstance(continuation_depth, int) or isinstance(
++            continuation_depth, bool
++        ):
++            continuation_depth = 0
++        invoke_hook(
++            "post_cron_job",
++            schema_version=_POST_CRON_HOOK_SCHEMA,
++            job_id=str(job.get("id", ""))[:256],
++            run_id=run_id,
++            occurred_at=_hermes_now().isoformat(),
++            success=bool(success),
++            final_response=_sanitize_post_cron_hook_text(final_response) or "",
++            error=_sanitize_post_cron_hook_text(error),
++            delivery_error=_sanitize_post_cron_hook_text(delivery_error),
++            output_path=_post_cron_hook_artifact_name(output_path),
++            origin=_post_cron_hook_origin(job),
++            continuation_depth=max(0, continuation_depth),
++            parent_run_id=_sanitize_post_cron_hook_text(job.get("parent_run_id")),
++        )
++    except Exception as exc:
++        logger.warning(
++            "Job '%s': post_cron_job hook failed open: %s",
++            job.get("id", "unknown"),
++            exc,
++        )
++
++
+ def tick(verbose: bool = True, adapters=None, loop=None) -> int:
+     """
+     Check and run all due jobs.
+@@ -1964,6 +2059,7 @@ def tick(verbose: bool = True, adapters=None, loop=None) -> int:
+ 
+         def _process_job(job: dict) -> bool:
+             """Run one due job end-to-end: execute, save, deliver, mark."""
++            run_id = uuid.uuid4().hex
+             try:
+                 success, output, final_response, error = run_job(job)
+ 
+@@ -1999,11 +2095,30 @@ def tick(verbose: bool = True, adapters=None, loop=None) -> int:
+                     error = "Agent completed but produced empty response (model error, timeout, or misconfiguration)"
+ 
+                 mark_job_run(job["id"], success, error, delivery_error=delivery_error)
++                _emit_post_cron_job_hook(
++                    job=job,
++                    run_id=run_id,
++                    success=success,
++                    final_response=final_response,
++                    error=error,
++                    delivery_error=delivery_error,
++                    output_path=output_file,
++                )
+                 return True
+ 
+             except Exception as e:
+                 logger.error("Error processing job %s: %s", job['id'], e)
+-                mark_job_run(job["id"], False, str(e))
++                error_text = f"{type(e).__name__}: {e}"
++                mark_job_run(job["id"], False, error_text)
++                _emit_post_cron_job_hook(
++                    job=job,
++                    run_id=run_id,
++                    success=False,
++                    final_response="",
++                    error=error_text,
++                    delivery_error=None,
++                    output_path=None,
++                )
+                 return False
+ 
+         # Partition due jobs: jobs with a per-job workdir and/or profile touch
+diff --git a/hermes_cli/plugins.py b/hermes_cli/plugins.py
+index fd449fc27..9e82d6bf6 100644
+--- a/hermes_cli/plugins.py
++++ b/hermes_cli/plugins.py
+@@ -136,6 +136,8 @@ VALID_HOOKS: Set[str] = {
+     "transform_llm_output",
+     "pre_llm_call",
+     "post_llm_call",
++    # Observer-only cron completion event. Consumers must not influence job status.
++    "post_cron_job",
+     "pre_api_request",
+     "post_api_request",
+     "api_request_error",

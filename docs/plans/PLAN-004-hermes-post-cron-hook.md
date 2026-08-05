@@ -2,7 +2,7 @@
 id: PLAN-004
 title: Hermes post-cron hook 與 Bastet durable bridge
 type: plan
-status: active
+status: accepted
 owner: engineering
 created: 2026-08-05
 updated: 2026-08-05
@@ -12,6 +12,8 @@ related_stages:
   - STAGE-003
 related_adrs:
   - ADR-0005
+related_evidence:
+  - EVID-004
 ---
 
 # PLAN-004：Hermes post-cron hook 與 Bastet durable bridge

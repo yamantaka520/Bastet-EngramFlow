@@ -10,11 +10,12 @@ updated: 2026-08-05
 
 # Bastet-EngramFlow 專案狀態
 
-- 最後更新：2026-08-05 09:10 CST（UTC+8）
+- 最後更新：2026-08-05 12:37 CST（UTC+8）
 - 已完成階段：`STAGE-000` Runtime-neutral foundation
 - 已完成階段：`STAGE-001` Scheduled execution reconciliation core
 - 已完成階段：`STAGE-002` Durable reconciliation delivery
-- 目前狀態：STAGE-003 active；pinned Hermes hook/bridge isolation verification
+- 已完成階段：`STAGE-003` Hermes production reconciliation hook integration
+- 目前狀態：STAGE-003 accepted；source-pinned artifact完成，production deployment未執行
 - 工作分支：`feat/hermes-production-reconciliation-hook`
 - Foundation commits：`ee4dc13afaf9ebf293dcfea848979b3762687cd8`、`4958b501869050b5bdbec33d299cbafc8cb87116`
 
@@ -22,13 +23,15 @@ updated: 2026-08-05
 
 - [GOAL-001](goals/GOAL-001-runtime-neutral-governed-continuation.md)：建立跨 Agent Runtime 的受治理主動專案延續能力。
 
-## Active STAGE-003 Deliverables
+## Accepted STAGE-003 Deliverables
 
-- [STAGE-003](stages/STAGE-003-hermes-production-reconciliation-hook.md)：pinned Hermes observer hook與durable bridge integration。
+- [STAGE-003](stages/STAGE-003-hermes-production-reconciliation-hook.md)：pinned Hermes observer hook與durable bridge integration，狀態`accepted`。
 - [PLAN-004](plans/PLAN-004-hermes-post-cron-hook.md)：source patch、shell bridge、restart/replay與thread-origin E2E。
 - ADR-0005：fail-open `post_cron_job` unified hook + allowlisted shell bridge。
-- Pinned baseline：Hermes `1072c0725115e9be0491ca4cb0d965b9f5f59874`，isolated worktree `/tmp/hermes-reconciliation-1072c`。
-- Production boundary：目前 dirty/diverged checkout、config與service維持未修改。
+- [EVID-004](evidence/EVID-004-hermes-post-cron-hook.md)：clean apply、211項Hermes integration tests與63項Bastet full gate。
+- [REVIEW-004](reviews/REVIEW-004-hermes-post-cron-hook.md)：final High 0 / Medium 0，狀態`accepted`。
+- Pinned baseline：Hermes `1072c0725115e9be0491ca4cb0d965b9f5f59874`；patch SHA-256 `2fa36a110d7dcf9a3fb5846ede59c95a5162edbea6f4c792b7026079a7d30c5b`。
+- Production boundary：production checkout、config與services均未修改或重啟。
 
 ## Accepted STAGE-002 Deliverables
 
@@ -70,18 +73,18 @@ updated: 2026-08-05
 
 ## Current Risks
 
-- SQLite reference store 為單一 filesystem/database boundary；NFS/多主機 locking 與 HA 尚未宣告支援。
-- Delivery 為 at-least-once；sink 若不以 stable event/proposal ID 去重，crash window 仍可能重複投遞。
-- Sink receipt 與 exception text 尚未有獨立 byte cap，列為 Low residual storage-growth risk。
-- Hermes adapter 目前是 public structured seam contract，尚未接入 production scheduler/gateway hook。
-- Remediation proposal 只入 queue，不代表已批准、已執行或已驗證。
+- SQLite reference store為單一filesystem/database boundary；NFS/多主機locking與HA尚未宣告支援。
+- Delivery為at-least-once；sink仍須以persisted event/proposal ID去重。
+- Hermes run UUID只在單一emitted payload內穩定，不代表跨job re-execution business identity。
+- Source-pinned integration已驗證，但production checkout/config/service與真實Telegram API delivery尚未部署或read-back。
+- Remediation proposal只入queue，不代表已批准、已執行或已驗證。
 
 ## Next Gate
 
-Production Hermes integration 必須另建 Stage/Plan，至少涵蓋：
+Production rollout必須另建Stage/Plan並取得明確核准，至少涵蓋：
 
-1. 在 pinned Hermes version 的 `_process_job()` 結果/delivery receipt 後接入 capture hook。
-2. Durable conversation ingress 與 remediation proposal queue 的真實 implementation。
-3. Telegram 原 thread delivery、next-turn context consumption 與 independent read-back。
-4. Sink receipt/error cap、retry backoff/dead-letter、queue pause/drain 與 rollback。
-5. Crash/restart、duplicate delivery、prompt injection、secret/redaction 與 service rollback E2E。
+1. Snapshot與reconcile production Hermes dirty/diverged source及config，不直接覆蓋local changes。
+2. Dedicated Bastet venv、durable local SQLite path與exact shell-hook allowlist approval。
+3. 套patch前preflight、service maintenance window、baseline與patched smoke tests。
+4. 真實Telegram原thread delivery/read-back與next-turn context consumption。
+5. Queue pause/drain、crash/restart、duplicate delivery與reverse-patch rollback演練。
