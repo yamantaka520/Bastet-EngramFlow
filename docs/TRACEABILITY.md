@@ -48,11 +48,12 @@ GOAL → STAGE → PLAN → ADR/SPEC → IMPLEMENTATION → EVIDENCE → REVIEW/
 - 狀態總覽與詳細文件衝突時，視為治理缺陷，必須在合併前修正。
 - `accepted` 代表驗收條件有證據支持，不等同單純寫完文件或程式。
 
-## 5. 第一階段追溯矩陣
+## 5. 階段追溯矩陣
 
 | Goal | Stage | Plan | ADR | Evidence | 狀態 |
 |---|---|---|---|---|---|
 | GOAL-001 | STAGE-000 | PLAN-001 | 0001, 0002 | EVID-001 | accepted |
+| GOAL-001 | STAGE-001 | PLAN-002 | 0003 | EVID-002 | accepted |
 
 ## 6. 自動化檢查目標
 

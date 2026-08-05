@@ -1,8 +1,8 @@
 # Bastet-EngramFlow 專案計畫
 
-- 文件版本：`0.2.0`
-- 更新時間：2026-08-05 07:50 CST（UTC+8）
-- 專案狀態：STAGE-000 accepted / next stage planning required
+- 文件版本：`0.3.0`
+- 更新時間：2026-08-05 08:13 CST（UTC+8）
+- 專案狀態：STAGE-001 accepted / scheduled execution reconciliation core
 - Repository：`yamantaka520/Bastet-EngramFlow`
 - 授權：Apache-2.0
 
@@ -39,6 +39,7 @@ Outcome feedback to AgentMemoryOS
 - 模型可能把「聯想到某件事」直接轉成副作用，缺乏治理。
 - worker 自行宣告成功，沒有獨立證據驗證。
 - 記憶結果若未回饋成結構化成效，系統難以改善觸發品質。
+- 隔離的排程 agent run 雖能獨立執行，卻無法把問題與結果主動帶回原 conversation 討論或形成受治理的修復提案。
 
 本專案要解決的問題不是「讓 Agent 做更多事」，而是「讓 Agent 在正確時間，基於可解釋記憶，提出正確且可治理的行動」。
 
@@ -58,6 +59,7 @@ Outcome feedback to AgentMemoryOS
 - 將低風險、允許的工作依 capability 與 policy 提交給適合的 Agent Runtime。
 - 由獨立 verifier 檢查 artifact、exit status 或 read-back state。
 - 將結果與品質指標回寫 AgentMemoryOS。
+- 將 scheduled run 的 structured result/finding 回流 conversation inbox，並在安全 gate 下建立 remediation proposal。
 
 ### 3.3 非目標
 
@@ -104,6 +106,10 @@ Outcome feedback to AgentMemoryOS
 ### 5.4 任務延續
 
 從未完成目標、blocked reason 與新事件判斷工作是否可恢復，並建立帶上下文與驗收條件的 vendor-neutral execution task，再交由 Runtime Router 選擇 Agent。
+
+### 5.5 排程結果回流與主動修復
+
+排程 agent 維持獨立 session/process；完成、失敗或 blocked 時提交 structured run envelope。Reconciler 將結果投遞到原 conversation inbox，讓使用者與 agent 可納入後續討論；retryable 問題形成 remediation proposal，但 external side effect、critical、non-idempotent 或 depth-exhausted 一律等待批准。
 
 ## 6. 功能需求
 
@@ -215,6 +221,15 @@ Verifier 不得只重述 worker 的文字結果。
 - 工具 discovery、schema validation、timeout、error mapping、auth 與 capability filtering 必須測試。
 - 詳見 [MCP_COMPATIBILITY.md](MCP_COMPATIBILITY.md)。
 
+### FR-09 Scheduled execution reconciliation
+
+- Scheduled run 以 `ScheduledRunEnvelope` 回報 schedule/run identity、origin conversation、outcome、findings、artifacts 與 continuation depth。
+- Reconciler 產生 `ConversationContextEvent`，只透過 idempotent inbox port 回流，不直接修改 vendor session store。
+- Finding 可形成帶 `why_now`、lineage、idempotency 與 acceptance criteria 的 `RemediationProposal`。
+- Core 只判斷 `auto_eligible` 或 `approval_required`；不直接聲稱修復已執行或 verified。
+- `(schedule_id, run_id)`、event ID 與 proposal ID 必須穩定；reference coordinator 提供 process-local 去重。
+- Sink failure 時不得 local-commit run key；重試依賴 sink idempotency 避免邏輯重複。Production 跨重啟／多實例保證需 durable ledger/outbox。
+
 ## 7. 非功能需求
 
 ### 7.1 Security
@@ -249,8 +264,9 @@ Verifier 不得只重述 worker 的文字結果。
 3. **Policy Layer / EngramFlow**：風險、預算、授權、去重與 idempotency。
 4. **Routing Layer / EngramFlow**：依 capabilities、policy 與 workspace 安全選擇 runtime。
 5. **Execution Layer / Agent Runtime**：由 Hermes、Claude Code、Codex、AGY、Grok Build 等執行 bounded task。
-6. **Verification Layer / EngramFlow**：獨立驗證。
-7. **Feedback Layer / AgentMemoryOS**：記錄結果並調整未來聯想。
+6. **Reconciliation Layer / EngramFlow**：將 scheduled result/finding 回流 conversation inbox，並建立受治理 remediation proposal。
+7. **Verification Layer / EngramFlow**：獨立驗證。
+8. **Feedback Layer / AgentMemoryOS**：記錄結果並調整未來聯想。
 
 詳細內容見 [ARCHITECTURE.md](ARCHITECTURE.md)。
 
@@ -275,6 +291,7 @@ bastet-engramflow/
 │   ├── protocols/
 │   │   ├── mcp/
 │   │   └── acp/
+│   ├── reconciliation/
 │   ├── verification/
 │   ├── feedback/
 │   └── observability/

@@ -3,7 +3,7 @@
 **Memory Resonance Runtime for Autonomous Agents**
 以記憶共鳴驅動自主 Agent 關聯、推理、提案、執行與驗證的開源架構。
 
-> 專案狀態：Planning / Draft `0.1`
+> 專案狀態：`STAGE-001` Scheduled execution reconciliation core accepted
 
 ## 願景
 
@@ -23,6 +23,7 @@ Memory → Resonance → Proposal → Policy → Execution → Verification → 
 - **Completion requires Evidence**：worker 回報完成不等於驗證完成。
 - **Adapter over Fork**：優先使用各 runtime 的 native SDK/API、MCP/ACP、hook 與 structured CLI，避免深度 fork。
 - **Shadow-first**：先觀察提案品質，再逐類開放自治權限。
+- **Isolated execution, governed return**：排程 run 保持獨立，但結果與問題以 structured event 回流 conversation；後續修復仍須去重、policy 與驗證。
 
 ## 文件索引
 
@@ -50,7 +51,7 @@ Memory → Resonance → Proposal → Policy → Execution → Verification → 
 
 ## 快速狀態
 
-`STAGE-000` runtime-neutral foundation 已完成驗收；後續 adapter discovery 與 implementation 必須先建立下一份 Stage/Plan。即時進度以 `docs/PROJECT_STATUS.md` 為準；技術選型與里程碑以 `docs/PROJECT_PLAN.md` 為準，未決策項目仍須透過 ADR 定案。
+`STAGE-000` runtime-neutral foundation 與 `STAGE-001` scheduled execution reconciliation core 已完成驗收。隔離排程的結果、問題與 remediation proposal 現可透過 runtime-neutral core 安全回流 conversation port；production durable adapter 仍屬後續階段。即時進度以 `docs/PROJECT_STATUS.md` 為準。
 
 ## License
 

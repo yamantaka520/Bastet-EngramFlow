@@ -11,6 +11,7 @@
 - Agent Runtime execution identity、adapter/runtime version、tool capability、workspace 與 task state
 - credentials、tokens、keys 與 external service permissions
 - verification artifacts 與 feedback records
+- scheduled run envelope、conversation context event、delivery/proposal receipt 與 remediation lineage
 - project/user isolation boundary
 
 ## 2. Trust boundaries
@@ -22,6 +23,7 @@
 5. Worker self-report → independent verifier
 6. EngramFlow feedback → AgentMemoryOS
 7. Runtime → external systems
+8. Isolated scheduled run → Reconciler → Conversation Inbox / Proposal Sink
 
 所有跨 boundary 資料必須經 schema validation、scope/ACL 檢查與 sanitized logging。
 
@@ -92,6 +94,18 @@
 - 威脅：adapter 或 runtime 宣稱支援 cancel、sandbox、tool restriction 等能力，但實際無法強制。
 - 控制：pinned version、capability contract tests、effective permission intersection、Experimental/Supported promotion gate。
 - 測試：每個 Supported capability 必須有真實 probe；probe 失敗時 runtime 不得被 Router 選用於要求該能力的任務。
+
+### Scheduled result session injection
+
+- 威脅：scheduled output 直接寫入 conversation history，破壞 message ordering、prompt cache，或把 untrusted finding 當成高權限 instruction。
+- 控制：structured schema、provenance、size/redaction boundary、Conversation Inbox port；event 明確標為 data，不直接 mutation vendor session store。
+- 測試：無 origin 不得假造 delivery；malformed identity/timestamp 必須拒絕。
+
+### Remediation storm / unsafe replay
+
+- 威脅：同一 run 重複投遞、反覆派工，或在 timeout 後重播 external side effect。
+- 控制：`(schedule_id, run_id)` dedup、event/proposal stable ID、idempotent sinks、depth gate；external side effect 與缺少 idempotency key 一律 approval-gated。
+- 測試：duplicate run 只形成一個邏輯 event/proposal；sink failure 可重試但不得被誤報已 commit。
 
 ## 4. High-risk default policy
 

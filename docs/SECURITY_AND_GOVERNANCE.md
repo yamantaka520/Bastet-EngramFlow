@@ -56,10 +56,13 @@
 - approval expiry：批准具 TTL，且只對特定 digest 有效。
 - idempotency：重試不可重複副作用。
 - evidence gate：未驗證不得標記完成。
+- scheduled return isolation：排程結果只能以 structured data event 進入 conversation inbox，不得直接改寫或跨 runtime resume 原 session store。
+- remediation boundary：core 只判斷 auto-remediation eligibility；external side effect、critical、non-idempotent 或 depth-exhausted 一律 approval-gated。
+- delivery deduplication：conversation event 與 remediation proposal 分別使用穩定 ID，sink 必須支援 idempotent retry。
 
 ## 4. Prompt injection 防護
 
-- 外部網頁、文件、tool output、memory text 一律視為 untrusted data。
+- 外部網頁、文件、tool output、memory text 與 scheduled run summary/finding 一律視為 untrusted data。
 - 模型輸出的 risk tier 只供參考，最終由 deterministic rules 判定。
 - tool schema 與 capability allowlist 由 runtime 控制，不由 prompt 擴權。
 - EngramFlow policy、adapter capability 與 runtime effective permission 取交集；runtime 不得自行宣告新增權限。

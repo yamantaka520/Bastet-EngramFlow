@@ -36,3 +36,4 @@ NNNN-short-kebab-case-title.md
 6. Risk tiers and approval model
 7. Verification evidence model
 8. Repository-native documentation governance（ADR-0002 Accepted）
+9. Scheduled execution reconciliation event 與 remediation boundary（ADR-0003 Accepted）
