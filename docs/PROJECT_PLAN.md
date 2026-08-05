@@ -1,8 +1,8 @@
 # Bastet-EngramFlow 專案計畫
 
-- 文件版本：`0.9.0`
-- 更新時間：2026-08-05 17:25 CST（UTC+8）
-- 專案狀態：STAGE-006 accepted / reconciliation outbox read-only shadow inspection
+- 文件版本：`0.10.0`
+- 更新時間：2026-08-05 18:21 CST（UTC+8）
+- 專案狀態：STAGE-007 accepted / fail-closed reconciliation dispatcher readiness
 - Repository：`yamantaka520/Bastet-EngramFlow`
 - 授權：Apache-2.0
 
@@ -481,10 +481,8 @@ Rollback 以停用 proposal consumption / action class 為第一選擇，不依�
 
 ## 18. 下一個工程 Sprint
 
-1. 完成 `PLAN-001` 文件治理與 runtime-neutral SPI。
-2. 建立 Hermes、Claude Code、Codex、AGY、Grok Build capability gap matrix。
-3. 匯入／pin AgentMemoryOS 與第一批 runtime 的真實介面資料。
-4. 定義 JSON Schema / Python contracts 與 Agent Context Bundle。
-5. 建立最小 append-only audit store與 deterministic policy baseline。
-6. 建立 trigger → proposal → shadow audit 的第一個 E2E 測試。
-7. 確認並測試「MCP 2.0+」的具體版本定義。
+1. 完成 `PLAN-008` durable Hermes handoff queue、bounded dispatcher CLI、full gate與independent review。
+2. 保持production dispatcher、consumer與現有outbox state不變，直到獨立enablement approval。
+3. 設計Hermes gateway queue consumer的stable seam、idempotency與ambiguous external delivery處置。
+4. 建立dispatcher/consumer service ownership、health/read-back、backup與rollback runbook。
+5. 對現有pending item準備一次性、bounded、可回滾的production approval pack。

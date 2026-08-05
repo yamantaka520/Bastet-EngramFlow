@@ -1,6 +1,11 @@
 """Scheduled execution reconciliation public API."""
 
 from .coordinator import ReconciliationCoordinator
+from .delivery_queue import (
+    SinkIdempotencyConflictError,
+    SinkPayloadTooLargeError,
+    SQLiteHermesDeliveryQueue,
+)
 from .durable import (
     DurableEnqueueReceipt,
     IdempotencyConflictError,
@@ -77,6 +82,9 @@ __all__ = [
     "ShadowCandidate",
     "ShadowInspectionError",
     "ShadowReport",
+    "SinkIdempotencyConflictError",
+    "SinkPayloadTooLargeError",
+    "SQLiteHermesDeliveryQueue",
     "SQLiteOutboxShadowInspector",
     "SQLiteReconciliationStore",
     "TextSanitizer",

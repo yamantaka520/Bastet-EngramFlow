@@ -3,7 +3,7 @@
 **Memory Resonance Runtime for Autonomous Agents**
 以記憶共鳴驅動自主 Agent 關聯、推理、提案、執行與驗證的開源架構。
 
-> 專案狀態：`STAGE-006` accepted；read-only outbox shadow inspector與production preflight通過，actual dispatcher仍未啟用
+> 專案狀態：`STAGE-007` accepted；durable Hermes handoff queue與fail-closed dispatcher repository readiness已驗收，production dispatcher/consumer仍未批准
 
 ## 願景
 
@@ -51,7 +51,7 @@ Memory → Resonance → Proposal → Policy → Execution → Verification → 
 
 ## 快速狀態
 
-`STAGE-000` 至 `STAGE-006` 已完成驗收。Bastet production Hermes已部署source-pinned `post_cron_job` observer hook與dedicated bridge/SQLite；production fixture已驗證Telegram DM origin及same-payload dedup。Shadow inspector只觀測dispatch readiness，不claim/ack或呼叫sink。即時進度以`docs/PROJECT_STATUS.md`為準。
+`STAGE-000` 至 `STAGE-007` 已完成repository驗收。Bastet production Hermes已部署source-pinned `post_cron_job` observer hook與dedicated bridge/SQLite。STAGE-007 dispatcher可將temp source outbox idempotently handoff到Bastet-owned Hermes queue，但未獲准在production執行enable flag、claim既有item或部署Hermes consumer。即時進度以`docs/PROJECT_STATUS.md`為準。
 
 ## License
 

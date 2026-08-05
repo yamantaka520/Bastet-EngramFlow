@@ -10,21 +10,29 @@ updated: 2026-08-05
 
 # Bastet-EngramFlow 專案狀態
 
-- 最後更新：2026-08-05 17:25 CST（UTC+8）
+- 最後更新：2026-08-05 18:21 CST（UTC+8）
 - 已完成階段：`STAGE-000` Runtime-neutral foundation
 - 已完成階段：`STAGE-001` Scheduled execution reconciliation core
 - 已完成階段：`STAGE-002` Durable reconciliation delivery
 - 已完成階段：`STAGE-003` Hermes production reconciliation hook integration
 - 已完成階段：`STAGE-004` production SHA reconciliation and rollout readiness
 - 已完成階段：`STAGE-005` Bastet Hermes controlled production rollout
-- 目前階段：`STAGE-006` reconciliation outbox shadow inspection（accepted）
-- 目前狀態：read-only shadow inspector、production preflight、71-test gate與independent review accepted；actual dispatcher未啟用
+- 已完成階段：`STAGE-006` reconciliation outbox shadow inspection
+- 目前階段：`STAGE-007` fail-closed reconciliation dispatcher readiness（accepted）
+- 目前狀態：durable Hermes handoff queue、bounded fail-closed CLI、81-test full gate及final review accepted；production dispatcher/consumer未批准
 - 工作分支：`feat/hermes-production-reconciliation-hook`
 - Foundation commits：`ee4dc13afaf9ebf293dcfea848979b3762687cd8`、`4958b501869050b5bdbec33d299cbafc8cb87116`
 
 ## Active Goals
 
 - [GOAL-001](goals/GOAL-001-runtime-neutral-governed-continuation.md)：建立跨 Agent Runtime 的受治理主動專案延續能力。
+
+## Accepted STAGE-007 Deliverables
+
+- [STAGE-007](stages/STAGE-007-reconciliation-dispatcher-readiness.md)：source outbox到Bastet-owned Hermes queue的repository readiness；不構成production approval。
+- [PLAN-008](plans/PLAN-008-fail-closed-reconciliation-dispatcher-readiness.md)：durable idempotent queue、bounded mutation gate、same-inode protection與redacted CLI。
+- [EVID-009](evidence/EVID-009-reconciliation-dispatcher-readiness.md)：RED、10項focused GREEN、independent review修復及production no-mutation boundary。
+- Production boundary：未執行enable flag、未建立production delivery DB、未claim/ack/fail既有item、未修改或重啟service。
 
 ## Accepted STAGE-006 Deliverables
 
@@ -106,7 +114,7 @@ updated: 2026-08-05
 ## Current Risks
 
 - SQLite reference store為單一filesystem/database boundary；NFS/多主機locking與HA尚未宣告支援。
-- Delivery為at-least-once；sink仍須以persisted event/proposal ID去重。
+- Source outbox delivery為at-least-once；STAGE-007 queue以persisted event/proposal ID與payload digest去重，但Hermes consumer尚未實作或啟用。
 - Hermes run UUID只在單一emitted payload內穩定，不代表跨job re-execution business identity。
 - Source-pinned production integration已部署並完成真實Telegram delivery、origin及dedup read-back；未啟動的outbox dispatcher仍需另立Stage與approval。
 - Production Hermes目前為base SHA加manifest-owned local patch，而非immutable deployment commit；upstream upgrade前必須先做verifier、changed-path及rollback preflight。
@@ -114,4 +122,4 @@ updated: 2026-08-05
 
 ## Next Gate
 
-STAGE-006已完成。若要啟用actual dispatcher、conversation sink或任何outbox state mutation，必須另立Stage/Plan並取得明確production approval；pending item不代表已delivery或已remediation。
+完成STAGE-007 repository review/publication後，另立production enablement approval stage：設計Hermes queue consumer、service/timer ownership、backup/rollback、ambiguous external delivery與現有pending item處置。未批准前不得在production使用`--enable-dispatch`。
