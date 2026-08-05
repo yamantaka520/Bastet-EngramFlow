@@ -1,8 +1,8 @@
 # Bastet-EngramFlow 專案計畫
 
-- 文件版本：`0.10.0`
-- 更新時間：2026-08-05 18:21 CST（UTC+8）
-- 專案狀態：STAGE-007 accepted / fail-closed reconciliation dispatcher readiness
+- 文件版本：`0.11.0`
+- 更新時間：2026-08-05 18:53 CST（UTC+8）
+- 專案狀態：STAGE-008 accepted / fail-closed Hermes context consumer readiness
 - Repository：`yamantaka520/Bastet-EngramFlow`
 - 授權：Apache-2.0
 
@@ -481,8 +481,8 @@ Rollback 以停用 proposal consumption / action class 為第一選擇，不依�
 
 ## 18. 下一個工程 Sprint
 
-1. 完成 `PLAN-008` durable Hermes handoff queue、bounded dispatcher CLI、full gate與independent review。
-2. 保持production dispatcher、consumer與現有outbox state不變，直到獨立enablement approval。
-3. 設計Hermes gateway queue consumer的stable seam、idempotency與ambiguous external delivery處置。
-4. 建立dispatcher/consumer service ownership、health/read-back、backup與rollback runbook。
-5. 對現有pending item準備一次性、bounded、可回滾的production approval pack。
+1. 完成`PLAN-009`兩階段Hermes context consumer、full gate、final independent review與publication。
+2. 保持production dispatcher、consumer、compatibility patch與現有outbox state不變，直到獨立enablement approval。
+3. 在隔離的exact-source clone建立並驗證最小chat/thread routing patch與plugin registration artifact。
+4. 依RUNBOOK-002取得service ownership、backup/restore、existing item disposition與single-item canary明確批准。
+5. 任何sending/ambiguous item維持quarantine，禁止rollback或roll-forward自動重送。

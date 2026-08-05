@@ -1,7 +1,13 @@
 """Scheduled execution reconciliation public API."""
 
+from .context_consumer import HermesPreLLMContextConsumer
 from .coordinator import ReconciliationCoordinator
 from .delivery_queue import (
+    ContextDeliveryLease,
+    ContextDeliveryRecord,
+    ContextDeliveryState,
+    ContextLeaseOwnershipError,
+    ContextStateTransitionError,
     SinkIdempotencyConflictError,
     SinkPayloadTooLargeError,
     SQLiteHermesDeliveryQueue,
@@ -49,6 +55,11 @@ from .shadow import (
 
 __all__ = [
     "ActionClass",
+    "ContextDeliveryLease",
+    "ContextDeliveryRecord",
+    "ContextDeliveryState",
+    "ContextLeaseOwnershipError",
+    "ContextStateTransitionError",
     "ConversationContextEvent",
     "ConversationInbox",
     "ConversationReference",
@@ -60,6 +71,7 @@ __all__ = [
     "HermesCronResultMapper",
     "HermesConversationInboxAdapter",
     "HermesConversationIngress",
+    "HermesPreLLMContextConsumer",
     "HermesCronReconciliationAdapter",
     "HermesRemediationProposalAdapter",
     "HermesRemediationQueue",

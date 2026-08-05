@@ -10,7 +10,7 @@ updated: 2026-08-05
 
 # Bastet-EngramFlow 專案狀態
 
-- 最後更新：2026-08-05 18:21 CST（UTC+8）
+- 最後更新：2026-08-05 18:53 CST（UTC+8）
 - 已完成階段：`STAGE-000` Runtime-neutral foundation
 - 已完成階段：`STAGE-001` Scheduled execution reconciliation core
 - 已完成階段：`STAGE-002` Durable reconciliation delivery
@@ -18,14 +18,24 @@ updated: 2026-08-05
 - 已完成階段：`STAGE-004` production SHA reconciliation and rollout readiness
 - 已完成階段：`STAGE-005` Bastet Hermes controlled production rollout
 - 已完成階段：`STAGE-006` reconciliation outbox shadow inspection
-- 目前階段：`STAGE-007` fail-closed reconciliation dispatcher readiness（accepted）
-- 目前狀態：durable Hermes handoff queue、bounded fail-closed CLI、81-test full gate及final review accepted；production dispatcher/consumer未批准
+- 已完成階段：`STAGE-007` fail-closed reconciliation dispatcher readiness
+- 目前階段：`STAGE-008` fail-closed Hermes context consumer readiness（accepted）
+- 目前狀態：兩階段context consumer、91-test full gate及final review accepted；production dispatcher/consumer/patch仍未批准
 - 工作分支：`feat/hermes-production-reconciliation-hook`
 - Foundation commits：`ee4dc13afaf9ebf293dcfea848979b3762687cd8`、`4958b501869050b5bdbec33d299cbafc8cb87116`
 
 ## Active Goals
 
 - [GOAL-001](goals/GOAL-001-runtime-neutral-governed-continuation.md)：建立跨 Agent Runtime 的受治理主動專案延續能力。
+
+## Accepted STAGE-008 Deliverables
+
+- [STAGE-008](stages/STAGE-008-hermes-context-consumer-readiness.md)：fail-closed Hermes pre-LLM consumer repository readiness；不構成production approval。
+- [PLAN-009](plans/PLAN-009-fail-closed-hermes-context-consumer-readiness.md)：exact routing、owner/turn fencing及prepared/sending/delivered/ambiguous狀態機。
+- [EVID-010](evidence/EVID-010-hermes-context-consumer-readiness.md)：RED→GREEN、review-fix與production source/service只讀read-back。
+- [REVIEW-010](reviews/REVIEW-010-stage-008-hermes-context-consumer-readiness.md)：final High 0 / Medium 0 / Low 2 non-blocking，repository ACCEPT、production WITHHELD。
+- [RUNBOOK-002](runbooks/RUNBOOK-002-hermes-context-consumer-production-approval.md)：NOT AUTHORIZED的production approval、canary與rollback pack。
+- Production boundary：未建立或mutate delivery DB、未套patch、未安裝plugin、未restart service、未claim item或呼叫platform。
 
 ## Accepted STAGE-007 Deliverables
 
@@ -114,7 +124,7 @@ updated: 2026-08-05
 ## Current Risks
 
 - SQLite reference store為單一filesystem/database boundary；NFS/多主機locking與HA尚未宣告支援。
-- Source outbox delivery為at-least-once；STAGE-007 queue以persisted event/proposal ID與payload digest去重，但Hermes consumer尚未實作或啟用。
+- Source outbox delivery為at-least-once；STAGE-008 consumer已在repository實作但未安裝或啟用，production queue仍不存在。
 - Hermes run UUID只在單一emitted payload內穩定，不代表跨job re-execution business identity。
 - Source-pinned production integration已部署並完成真實Telegram delivery、origin及dedup read-back；未啟動的outbox dispatcher仍需另立Stage與approval。
 - Production Hermes目前為base SHA加manifest-owned local patch，而非immutable deployment commit；upstream upgrade前必須先做verifier、changed-path及rollback preflight。
@@ -122,4 +132,4 @@ updated: 2026-08-05
 
 ## Next Gate
 
-完成STAGE-007 repository review/publication後，另立production enablement approval stage：設計Hermes queue consumer、service/timer ownership、backup/rollback、ambiguous external delivery與現有pending item處置。未批准前不得在production使用`--enable-dispatch`。
+完成STAGE-008 full gate、final review與publication後，另立production enablement stage，依RUNBOOK-002固定patch/plugin digest、service ownership、backup、existing item disposition與single-item canary。未批准前不得使用`--enable-dispatch`、安裝consumer或restart production service。
