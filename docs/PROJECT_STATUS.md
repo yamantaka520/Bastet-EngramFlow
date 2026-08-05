@@ -14,13 +14,21 @@ updated: 2026-08-05
 - 已完成階段：`STAGE-000` Runtime-neutral foundation
 - 已完成階段：`STAGE-001` Scheduled execution reconciliation core
 - 已完成階段：`STAGE-002` Durable reconciliation delivery
-- 目前狀態：STAGE-002 accepted；production Hermes hook 尚未啟動
-- 工作分支：`feat/durable-reconciliation-delivery`
+- 目前狀態：STAGE-003 active；pinned Hermes hook/bridge isolation verification
+- 工作分支：`feat/hermes-production-reconciliation-hook`
 - Foundation commits：`ee4dc13afaf9ebf293dcfea848979b3762687cd8`、`4958b501869050b5bdbec33d299cbafc8cb87116`
 
 ## Active Goals
 
 - [GOAL-001](goals/GOAL-001-runtime-neutral-governed-continuation.md)：建立跨 Agent Runtime 的受治理主動專案延續能力。
+
+## Active STAGE-003 Deliverables
+
+- [STAGE-003](stages/STAGE-003-hermes-production-reconciliation-hook.md)：pinned Hermes observer hook與durable bridge integration。
+- [PLAN-004](plans/PLAN-004-hermes-post-cron-hook.md)：source patch、shell bridge、restart/replay與thread-origin E2E。
+- ADR-0005：fail-open `post_cron_job` unified hook + allowlisted shell bridge。
+- Pinned baseline：Hermes `1072c0725115e9be0491ca4cb0d965b9f5f59874`，isolated worktree `/tmp/hermes-reconciliation-1072c`。
+- Production boundary：目前 dirty/diverged checkout、config與service維持未修改。
 
 ## Accepted STAGE-002 Deliverables
 

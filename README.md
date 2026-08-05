@@ -3,7 +3,7 @@
 **Memory Resonance Runtime for Autonomous Agents**
 以記憶共鳴驅動自主 Agent 關聯、推理、提案、執行與驗證的開源架構。
 
-> 專案狀態：`STAGE-002` Durable reconciliation delivery accepted
+> 專案狀態：`STAGE-003` Hermes production reconciliation hook integration active
 
 ## 願景
 

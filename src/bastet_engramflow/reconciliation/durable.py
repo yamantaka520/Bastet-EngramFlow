@@ -74,14 +74,18 @@ class SQLiteReconciliationStore:
         *,
         busy_timeout_ms: int = 5000,
         max_payload_bytes: int = 262_144,
+        max_status_bytes: int = 16_384,
     ) -> None:
         self.path = Path(path)
         self.busy_timeout_ms = busy_timeout_ms
         self.max_payload_bytes = max_payload_bytes
+        self.max_status_bytes = max_status_bytes
         if busy_timeout_ms < 1:
             raise ValueError("busy_timeout_ms must be positive")
         if max_payload_bytes < 1:
             raise ValueError("max_payload_bytes must be positive")
+        if max_status_bytes < len("...[truncated]".encode("utf-8")) + 1:
+            raise ValueError("max_status_bytes is too small for truncation marker")
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self._initialize()
 
@@ -315,6 +319,7 @@ class SQLiteReconciliationStore:
         now: float | None = None,
     ) -> None:
         delivered_at = time.time() if now is None else now
+        bounded_receipt = self._bound_status_text(receipt)
         with self._connect() as connection:
             cursor = connection.execute(
                 """
@@ -323,7 +328,7 @@ class SQLiteReconciliationStore:
                     lease_owner = NULL, lease_until = NULL, last_error = NULL
                 WHERE item_id = ? AND state = 'leased' AND lease_owner = ?
                 """,
-                (receipt, delivered_at, item_id, owner),
+                (bounded_receipt, delivered_at, item_id, owner),
             )
             if cursor.rowcount != 1:
                 raise LeaseOwnershipError(
@@ -331,6 +336,7 @@ class SQLiteReconciliationStore:
                 )
 
     def fail(self, item_id: str, owner: str, error: str) -> None:
+        bounded_error = self._bound_status_text(error)
         with self._connect() as connection:
             cursor = connection.execute(
                 """
@@ -339,12 +345,22 @@ class SQLiteReconciliationStore:
                     lease_owner = NULL, lease_until = NULL
                 WHERE item_id = ? AND state = 'leased' AND lease_owner = ?
                 """,
-                (error, item_id, owner),
+                (bounded_error, item_id, owner),
             )
             if cursor.rowcount != 1:
                 raise LeaseOwnershipError(
                     f"item {item_id!r} is not leased by owner {owner!r}"
                 )
+
+    def _bound_status_text(self, value: str) -> str:
+        text = str(value)
+        encoded = text.encode("utf-8")
+        if len(encoded) <= self.max_status_bytes:
+            return text
+        marker = "...[truncated]"
+        marker_bytes = marker.encode("utf-8")
+        prefix = encoded[: self.max_status_bytes - len(marker_bytes)]
+        return prefix.decode("utf-8", errors="ignore") + marker
 
     def get_outbox(self, item_id: str) -> OutboxItem:
         with self._connect() as connection:
