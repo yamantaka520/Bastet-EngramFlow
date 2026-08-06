@@ -1,6 +1,6 @@
 # Bastet Hermes Context Consumer Production Approval / Rollback Pack
 
-Status: **NOT AUTHORIZED**. This document is a future-stage checklist, not permission to run mutation commands.
+Status: **LATEST AUTHORIZED EXECUTION COMPLETED; NO STANDING AUTHORIZATION**. EVID-014 records the exhausted `2026-08-06 20:45–21:45 CST` approval. This checklist is not permission for any later mutation.
 
 ## Fixed current ownership (read-only discovery)
 
@@ -9,14 +9,14 @@ Status: **NOT AUTHORIZED**. This document is a future-stage checklist, not permi
 - Hermes checkout: `/home/bastet/.hermes/hermes-agent`
 - Current observed Hermes HEAD: `d0c0a6b8fe5ff45bcb3d2ba34e596cca7100ed5a`
 - Existing source DB environment: `BASTET_RECONCILIATION_DB`
-- Proposed delivery DB environment: `BASTET_HERMES_DELIVERY_DB` (not configured)
+- Live delivery DB environment: `BASTET_HERMES_DELIVERY_DB` (configured by the EVID-014 deployment)
 - Consumer seam: Hermes `pre_llm_call`
 - Exact routing source: `agent._chat_id` and `agent._thread_id`
 - Durable state machine: `pending → prepared → sending → delivered/ambiguous`
 
 Any change in service owner, checkout, HEAD, source patch state or hook contract is a stop condition and requires a new compatibility review.
 
-## STAGE-009 verified artifacts (still NOT AUTHORIZED)
+## STAGE-009 verified artifacts (future mutations still NOT AUTHORIZED)
 
 - Bastet-EngramFlow artifact-lineage source commit before STAGE-009 closure: `389d88fa8f35af7a260dbb795f007c79684aba3f`. This is not the later rollout-attempt checkout commit recorded by EVID-012; every future approval must pin the exact deployment commit separately rather than infer it from this lineage field.
 - Reproducible release wheel: `bastet_engramflow-0.1.0.dev0-py3-none-any.whl`, SHA-256 `3791465422639feb80e8a6fd459cb575839029bcf1cad28a871e105379c018d7`, built from an isolated source copy with `SOURCE_DATE_EPOCH=315532800`; two builds were byte-identical and a clean-venv plugin smoke passed.
@@ -26,10 +26,10 @@ Any change in service owner, checkout, HEAD, source patch state or hook contract
 - Plugin init SHA-256: `825d5179d8150a9e3049028f3e1cbc8088b1810e282d2faaa8169fac88ff2b67`.
 - Plugin manifest SHA-256: `08e26d49ff8343ae1ca31736dcb096fb6262f1dba1729bf17e78d6b1d17199e2`.
 - Canonical compatibility runner: `integrations/hermes/context_consumer/run_tests.py`; isolated exact-source result: 3 tests PASS.
-- Read-only production state: local ext-family filesystem, integration directory mode `0700`, source DB mode `0600`, delivery DB absent; source outbox has one pending item with attempts zero and no lease.
-- The existing pending source item is **not** an approved canary and must receive an explicit per-item disposition outside this public repository before deployment.
+- EVID-014 final production state: local filesystem, source DB and delivery DB private, exact-routing patch/plugin/drop-in/dedicated venv live; fresh source/sink `delivered/attempts=1`, proposal `0`.
+- The historical source `delivered/attempts=1` and historical quarantined sink `pending/attempts=0` have an explicit preserve/no-replay/no-reset disposition. Any later handling requires new per-item approval.
 
-The following approval fields remain intentionally unresolved: maintenance window/approver, backup and rollback operators/paths, exact delivery DB path, dispatcher/consumer ownership, existing pending item disposition, exact canary conversation/thread, observation period and rollback authority. Any unresolved field means NOT APPROVED.
+EVID-014 resolved these fields only for its exhausted maintenance window and owner-private exact target. No field from that record may be reused as approval for a later mutation.
 
 ## Approval record required before any mutation
 
@@ -121,4 +121,4 @@ The patch must not infer conversation from`sender_id`, fake an incoming message,
 
 ## Production boundary
 
-STAGE-008 and STAGE-009 do not authorize any step under Backup, Deployment or Rollback. They do not create the delivery DB, patch Hermes, install a plugin, enable the dispatcher/consumer, restart the service, claim an item or call Telegram/platform APIs.
+EVID-014 records the completed STAGE-009 deployment and fresh canary. There is no standing dispatcher and no standing authorization to create another event, dispatch, replay/reset a row, modify the plugin/patch/config, restart the service or call Telegram/platform APIs. Every future mutation requires a new bounded window and explicit approval.

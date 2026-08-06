@@ -10,7 +10,7 @@ updated: 2026-08-06
 
 # Bastet-EngramFlow 專案狀態
 
-- 最後更新：2026-08-06 20:26 CST（UTC+8）
+- 最後更新：2026-08-06 20:54 CST（UTC+8）
 - 已完成階段：`STAGE-000` Runtime-neutral foundation
 - 已完成階段：`STAGE-001` Scheduled execution reconciliation core
 - 已完成階段：`STAGE-002` Durable reconciliation delivery
@@ -20,8 +20,8 @@ updated: 2026-08-06
 - 已完成階段：`STAGE-006` reconciliation outbox shadow inspection
 - 已完成階段：`STAGE-007` fail-closed reconciliation dispatcher readiness
 - 已完成階段：`STAGE-008` fail-closed Hermes context consumer readiness
-- 目前階段：`STAGE-009` Hermes context consumer production artifact readiness（accepted）
-- 目前狀態：repository artifacts維持ACCEPT；受控production rollout完成單筆dispatch後因AGY stale trust pin而fail-closed並完成必要rollback。後續獨立AGY-only remediation已驗證官方1.1.10 binary、更新pin並通過代表性Hermes primary-route functional gate；context consumer仍維持rollback，production enablement仍WITHHELD
+- 已完成階段：`STAGE-009` Hermes context consumer production enablement（accepted）
+- 目前狀態：AGY prerequisite已獨立關閉；fresh explicit approval下的全新專用canary完成bridge enqueue、單筆dispatch、exact-target pre-LLM consumption與正常AGY回應。Context consumer維持production enabled；舊source/quarantine pair仍保持隔離不動
 - 工作分支：`feat/hermes-production-reconciliation-hook`
 - Foundation commits：`ee4dc13afaf9ebf293dcfea848979b3762687cd8`、`4958b501869050b5bdbec33d299cbafc8cb87116`
 
@@ -35,12 +35,14 @@ updated: 2026-08-06
 - [PLAN-010](plans/PLAN-010-source-pinned-hermes-context-consumer-production-artifacts.md)：只讀preflight、TDD artifacts、digest manifest與canonical runner。
 - [EVID-011](evidence/EVID-011-hermes-context-consumer-production-artifact-readiness.md)：live read-back、plugin RED→GREEN、100-test full gate、wheel及source-pinned compatibility evidence。
 - [REVIEW-011](reviews/REVIEW-011-stage-009-hermes-context-consumer-production-artifact-readiness.md)：final High 0 / Medium 0 / Low 2 non-blocking；repository artifact readiness ACCEPT、production WITHHELD。
-- [RUNBOOK-002](runbooks/RUNBOOK-002-hermes-context-consumer-production-approval.md)：artifact欄位已固定，但production仍為NOT AUTHORIZED。
+- [RUNBOOK-002](runbooks/RUNBOOK-002-hermes-context-consumer-production-approval.md)：本次fresh-canary批准已執行完畢且不構成standing authorization；保留未來變更的preflight/rollback boundary。
 - [EVID-012](evidence/EVID-012-hermes-context-consumer-production-rollout-attempt.md)：受控deployment、單筆dispatch、AGY prerequisite failure、fail-closed queue與rollback證據。
 - [REVIEW-012](reviews/REVIEW-012-stage-009-production-rollout-attempt-closure.md)：rollback execution/evidence與rollout-attempt closure ACCEPT；production context consumer enablement仍WITHHELD，review狀態`accepted`。
 - [EVID-013](evidence/EVID-013-agy-executable-trust-pin-remediation.md)：官方manifest/archive/executable digest chain、隔離version probe、獨立批准的trust-pin更新、transport/identity/main-route functional gates及queue no-mutation read-back。
 - [REVIEW-013](reviews/REVIEW-013-agy-executable-trust-pin-remediation-closure.md)：獨立live service/pin/artifact/SQLite read-back，final High 0 / Medium 0 / Low 0；AGY remediation ACCEPT、rollout-attempt closure ACCEPT (rolled back)、production context consumer enablement WITHHELD。
-- Final production state：context patch/plugin/drop-in/dedicated venv/live delivery DB均已rollback；baseline gateway active且Telegram connected。Source item為`delivered/attempts=1`，matching sink row隔離為`pending/attempts=0`、ambiguous 0，不得自動replay/reset。
+- [EVID-014](evidence/EVID-014-hermes-context-consumer-fresh-canary-rollout.md)：fresh maintenance approval、離線rehearsal、backup/restore gate、固定artifacts deployment、formal bridge enqueue、單筆dispatch、real incoming-turn canary與post-canary snapshots。
+- [REVIEW-014](reviews/REVIEW-014-stage-009-fresh-canary-production-closure.md)：獨立live service/artifact/queue/log/docs read-back；final High 0 / Medium 0，STAGE-009 production enablement ACCEPT。
+- Final production state：exact-routing patch、plugin、drop-in、dedicated venv與live delivery DB已部署；gateway active且Telegram connected。Fresh source/sink皆`delivered/attempts=1`、proposal 0；historical source仍`delivered/attempts=1`，historical quarantined sink仍`pending/attempts=0`且不得自動replay/reset。
 - Closed prerequisite：AGY live executable已證實與官方checksum-verified 1.1.10 release byte-identical；effective trust pin已匹配，identity與代表性Hermes main-route functional gate PASS。Transport connected仍不可單獨視為agent functional health。
 
 ## Accepted STAGE-008 Deliverables
@@ -135,17 +137,17 @@ updated: 2026-08-06
 ## Blockers
 
 - High：0。原AGY executable trust-pin mismatch已由EVID-013在獨立批准範圍內關閉。
-- Production context consumer enablement仍受新maintenance window、已ack source/quarantined sink逐筆處置與fresh explicit approval約束；這是未滿足的治理gate，不是AGY functional blocker。
+- Production context consumer enablement已由EVID-014 fresh-canary rollout關閉；無open deployment blocker。
 
 ## Current Risks
 
 - SQLite reference store為單一filesystem/database boundary；NFS/多主機locking與HA尚未宣告支援。
-- Source outbox delivery為at-least-once；本次approved source item已`delivered/attempts=1`，matching sink row隔離為`pending/attempts=0`。兩者不得自動reset、replay或合併。
+- Source outbox delivery為at-least-once；historical source為`delivered/attempts=1`且matching sink row隔離為`pending/attempts=0`，兩者不得自動reset、replay或合併。Fresh canary source/sink均已`delivered/attempts=1`。
 - Hermes run UUID只在單一emitted payload內穩定，不代表跨job re-execution business identity。
-- STAGE-009 context consumer production artifacts曾受控部署後rollback；目前production queue、consumer plugin、dedicated venv、drop-in與exact-routing patch均不在live state。
+- STAGE-009 context consumer目前live enabled；dispatcher不是常駐程序。Hermes upgrade、routing contract變動或queue schema drift前必須先停用並重跑source-pinned verifier/canonical suite。
 - Production Hermes仍含既有manifest-owned local post-cron patch，而非immutable deployment commit；upstream upgrade前必須先做verifier、changed-path及rollback preflight。
 - Remediation proposal只入queue，不代表已批准、已執行或已驗證。
 
 ## Next Gate
 
-AGY prerequisite已關閉。若仍要重試STAGE-009 production enablement，下一個gate是建立新的maintenance window、重新決定已ack source與quarantined pending sink的per-item disposition、重跑RUNBOOK-002全部preflight（包含再次確認AGY identity/main-route functional health），並取得新的明確deployment/canary/rollback授權。不得自動replay、reset或沿用舊批准窗口。
+STAGE-009 production enablement已完成。下一個gate是持續唯讀觀測service/queue health並在任何Hermes/AGY/plugin/schema升級前重跑RUNBOOK-002 preflight；本次批准已用畢，不得再建立event、dispatch、replay/reset舊row或沿用本次維護窗口。
