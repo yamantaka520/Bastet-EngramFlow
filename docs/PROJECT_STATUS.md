@@ -5,12 +5,12 @@ type: status
 status: active
 owner: project-maintainers
 created: 2026-08-05
-updated: 2026-08-05
+updated: 2026-08-06
 ---
 
 # Bastet-EngramFlow 專案狀態
 
-- 最後更新：2026-08-05 23:56 CST（UTC+8）
+- 最後更新：2026-08-06 09:41 CST（UTC+8）
 - 已完成階段：`STAGE-000` Runtime-neutral foundation
 - 已完成階段：`STAGE-001` Scheduled execution reconciliation core
 - 已完成階段：`STAGE-002` Durable reconciliation delivery
@@ -21,7 +21,7 @@ updated: 2026-08-05
 - 已完成階段：`STAGE-007` fail-closed reconciliation dispatcher readiness
 - 已完成階段：`STAGE-008` fail-closed Hermes context consumer readiness
 - 目前階段：`STAGE-009` Hermes context consumer production artifact readiness（accepted）
-- 目前狀態：source-pinned patch/plugin、live只讀preflight、100-test full gate、reproducible wheel與final independent review均完成；repository artifacts ACCEPT，production deployment仍WITHHELD
+- 目前狀態：repository artifacts維持ACCEPT；2026-08-06受控production rollout完成單筆dispatch後，真實incoming turn在hook前被AGY executable trust-pin mismatch阻擋，queue fail-closed且必要rollback完成；production deployment仍WITHHELD
 - 工作分支：`feat/hermes-production-reconciliation-hook`
 - Foundation commits：`ee4dc13afaf9ebf293dcfea848979b3762687cd8`、`4958b501869050b5bdbec33d299cbafc8cb87116`
 
@@ -36,7 +36,10 @@ updated: 2026-08-05
 - [EVID-011](evidence/EVID-011-hermes-context-consumer-production-artifact-readiness.md)：live read-back、plugin RED→GREEN、100-test full gate、wheel及source-pinned compatibility evidence。
 - [REVIEW-011](reviews/REVIEW-011-stage-009-hermes-context-consumer-production-artifact-readiness.md)：final High 0 / Medium 0 / Low 2 non-blocking；repository artifact readiness ACCEPT、production WITHHELD。
 - [RUNBOOK-002](runbooks/RUNBOOK-002-hermes-context-consumer-production-approval.md)：artifact欄位已固定，但production仍為NOT AUTHORIZED。
-- Production boundary：未套patch、未安裝plugin、未建立delivery DB、未claim既有pending item、未restart service或執行platform canary。
+- [EVID-012](evidence/EVID-012-hermes-context-consumer-production-rollout-attempt.md)：受控deployment、單筆dispatch、AGY prerequisite failure、fail-closed queue與rollback證據。
+- [REVIEW-012](reviews/REVIEW-012-stage-009-production-rollout-attempt-closure.md)：rollback execution/evidence closure ACCEPT；因AGY trust prerequisite仍有open High，overall rollout closure與production context consumer enablement WITHHELD，review狀態`blocked`。
+- Final production state：context patch/plugin/drop-in/dedicated venv/live delivery DB均已rollback；baseline gateway active且Telegram connected。Source item為`delivered/attempts=1`，matching sink row隔離為`pending/attempts=0`、ambiguous 0，不得自動replay/reset。
+- Open blocker：AGY executable實際SHA-256不符合service trust pin；需獨立驗證binary disposition並另行批准，transport connected不可視為agent functional health。
 
 ## Accepted STAGE-008 Deliverables
 
@@ -129,17 +132,18 @@ updated: 2026-08-05
 
 ## Blockers
 
-- 無。
+- High：Bastet primary provider的AGY executable實際SHA-256與service設定的trust pin不一致，真實incoming turn在`pre_llm_call`前即初始化失敗。不得在context-consumer rollout中更新或繞過pin。
+- `REVIEW-012`維持`blocked`；production context consumer enablement與overall rollout closure均WITHHELD。
 
 ## Current Risks
 
 - SQLite reference store為單一filesystem/database boundary；NFS/多主機locking與HA尚未宣告支援。
-- Source outbox delivery為at-least-once；STAGE-008 consumer已在repository實作但未安裝或啟用，production queue仍不存在。
+- Source outbox delivery為at-least-once；本次approved source item已`delivered/attempts=1`，matching sink row隔離為`pending/attempts=0`。兩者不得自動reset、replay或合併。
 - Hermes run UUID只在單一emitted payload內穩定，不代表跨job re-execution business identity。
-- Source-pinned production integration已部署並完成真實Telegram delivery、origin及dedup read-back；未啟動的outbox dispatcher仍需另立Stage與approval。
-- Production Hermes目前為base SHA加manifest-owned local patch，而非immutable deployment commit；upstream upgrade前必須先做verifier、changed-path及rollback preflight。
+- STAGE-009 context consumer production artifacts曾受控部署後rollback；目前production queue、consumer plugin、dedicated venv、drop-in與exact-routing patch均不在live state。
+- Production Hermes仍含既有manifest-owned local post-cron patch，而非immutable deployment commit；upstream upgrade前必須先做verifier、changed-path及rollback preflight。
 - Remediation proposal只入queue，不代表已批准、已執行或已驗證。
 
 ## Next Gate
 
-完成STAGE-008 full gate、final review與publication後，另立production enablement stage，依RUNBOOK-002固定patch/plugin digest、service ownership、backup、existing item disposition與single-item canary。未批准前不得使用`--enable-dispatch`、安裝consumer或restart production service。
+先獨立驗證AGY executable來源、版本與digest disposition，並另行批准恢復舊binary或更新trust pin。該prerequisite關閉後，若仍要重試STAGE-009 production enablement，必須建立新的maintenance window、重新決定已ack source與quarantined pending sink的per-item disposition，重跑RUNBOOK-002全部preflight與agent-functional-health gate，並取得新的明確canary/rollback授權。

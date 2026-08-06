@@ -5,7 +5,7 @@ type: traceability
 status: active
 owner: project-maintainers
 created: 2026-08-05
-updated: 2026-08-05
+updated: 2026-08-06
 ---
 
 # 可追溯性規範
@@ -61,7 +61,7 @@ GOAL → STAGE → PLAN → ADR/SPEC → IMPLEMENTATION → EVIDENCE → REVIEW/
 | GOAL-001 | STAGE-006 | PLAN-007 | 0005 | EVID-008 | accepted |
 | GOAL-001 | STAGE-007 | PLAN-008 | 0004, 0005 | EVID-009 | accepted |
 | GOAL-001 | STAGE-008 | PLAN-009 | 0004, 0005 | EVID-010 | accepted |
-| GOAL-001 | STAGE-009 | PLAN-010 | 0004, 0005 | EVID-011 | accepted |
+| GOAL-001 | STAGE-009 | PLAN-010 | 0004, 0005 | EVID-011, EVID-012 | artifact readiness accepted; rollout rolled back |
 
 ## 6. 自動化檢查目標
 

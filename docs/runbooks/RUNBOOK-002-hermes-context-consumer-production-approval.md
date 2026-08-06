@@ -65,6 +65,7 @@ The patch must not infer conversation from`sender_id`, fake an incoming message,
 - Verify Hermes HEAD and ensure changed paths equal the previously governed patch allowlist only.
 - Verify the exact `pre_llm_call` contract and agent chat/thread attributes still exist.
 - Verify release artifacts and patch/plugin digests.
+- Verify every configured primary-provider executable trust/version prerequisite before stopping service. For AGY this includes byte-comparing `AGY_CLI_PATH` against the pinned `AGY_CLI_SHA256`; any mismatch is a stop condition and must not be bypassed by updating the pin inside this rollout.
 - Verify delivery filesystem is local and supported; stop on NFS/remote/unknown locking semantics.
 - Run full Bastet gates and source-pinned Hermes compatibility tests in isolated environments.
 - Inspect queue state with a read-only connection; do not let a constructor create or migrate the production DB during preflight.
@@ -84,7 +85,7 @@ The patch must not infer conversation from`sender_id`, fake an incoming message,
 3. Apply only the approved compatibility patch; changed-path read-back must match its manifest.
 4. Register only the reviewed`pre_llm_call` consumer plugin; configure a private delivery DB path and fixed owner identity.
 5. Run source-pinned tests and config/plugin load validation before service start.
-6. Start Hermes with dispatcher still disabled; verify service health and that missing routing produces zero claims.
+6. Start Hermes with dispatcher still disabled; verify transport connectivity, primary-provider trust/version validation and a bounded agent-initialization functional gate. Transport-only `Connected` evidence is insufficient. Verify that missing routing produces zero claims.
 7. Enable only the approved one-item canary dispatch, then disable dispatcher again.
 8. Trigger one real incoming turn in the approved exact target and verify the context is attached to that turn only.
 
@@ -105,6 +106,7 @@ The patch must not infer conversation from`sender_id`, fake an incoming message,
 - Wrong-target claim, duplicate attempt, raw identifier/payload leak or platform send.
 - Any row found in`sending` after timeout or any unexpected`ambiguous` row.
 - Service fails health checks or pre-existing queues change outside the approved canary.
+- Primary LLM/provider initialization fails, or its executable trust/version pin differs from the deployed executable, even when the platform adapter remains connected.
 
 ## Rollback sequence
 
