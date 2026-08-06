@@ -2,7 +2,7 @@
 id: REVIEW-012
 title: STAGE-009 controlled production rollout attempt closure review
 type: review
-status: blocked
+status: accepted
 owner: independent-review
 created: 2026-08-06
 updated: 2026-08-06
@@ -15,13 +15,14 @@ related_plans:
 related_evidence:
   - EVID-011
   - EVID-012
+  - EVID-013
 ---
 
 # REVIEW-012 — STAGE-009 Controlled Production Rollout Attempt Closure
 
 ## Scope
 
-Review the approved second deployment attempt, exact one-item dispatch, real incoming-turn failure, fail-closed queue state, necessary rollback, final baseline state and remaining production blocker. This review does not approve AGY trust-pin changes, delivery replay, source reset or another canary.
+Review the approved second deployment attempt, exact one-item dispatch, real incoming-turn failure, fail-closed queue state, necessary rollback and final baseline state. A separately approved AGY prerequisite remediation is read back from EVID-013 only to close the external High; this review does not approve delivery replay, source reset or another context-consumer canary.
 
 ## Findings
 
@@ -31,7 +32,7 @@ Review the approved second deployment attempt, exact one-item dispatch, real inc
 - Evidence: actual AGY executable SHA-256 did not match the pinned `AGY_CLI_SHA256` service environment.
 - Containment: consumer did not claim the row; delivery remained `pending/attempts=0`; no `sending` or `ambiguous` state occurred; rollout was rolled back.
 - Remediation: RUNBOOK-002 now requires provider executable trust/version validation and a bounded agent-initialization functional gate before one-item dispatch.
-- Status: deployment risk contained; external AGY prerequisite remains an open production blocker.
+- Status: deployment risk contained. EVID-013 subsequently proved the live executable byte-identical to the checksum-verified official AGY 1.1.10 release, updated the stale pin under separate approval and passed identity, transport and representative primary-route functional gates. The external High is closed.
 
 ### Medium — source and sink primary keys were initially compared using an invalid equality assumption
 
@@ -64,13 +65,15 @@ Review the approved second deployment attempt, exact one-item dispatch, real inc
 
 ## Open finding count
 
-- High: 1 — external production prerequisite: deployed AGY executable does not match the configured trust pin, so agent functional health is unavailable.
+- High: 0 — the external AGY prerequisite was closed by EVID-013.
 - Medium: 0.
 
 ## Verdict
 
 **Rollback execution and evidence closure: ACCEPT.**
 
-**Overall rollout closure and production context consumer enablement: WITHHELD.**
+**Overall rollout-attempt closure: ACCEPT (rolled back).**
 
-The repository artifacts remain accepted under STAGE-009, but this review stays blocked while the High prerequisite finding is open and production is back on the prior configuration. The source row is already acknowledged and its matching sink row is quarantined pending; neither may be replayed/reset automatically. A future attempt requires an independently validated AGY binary disposition, a new maintenance window, a new per-item disposition and a fresh explicit approval.
+**Production context consumer enablement: WITHHELD.**
+
+The repository artifacts remain accepted under STAGE-009 and the failed rollout attempt is closed as a verified rollback. EVID-013 closes the separate AGY prerequisite, but it does not turn the rolled-back consumer into a successful deployment. The source row is already acknowledged and its matching sink row is quarantined pending; neither may be replayed/reset automatically. A future attempt still requires a new maintenance window, a new per-item disposition and a fresh explicit approval.

@@ -10,7 +10,7 @@ updated: 2026-08-06
 
 # Bastet-EngramFlow 專案狀態
 
-- 最後更新：2026-08-06 09:41 CST（UTC+8）
+- 最後更新：2026-08-06 20:26 CST（UTC+8）
 - 已完成階段：`STAGE-000` Runtime-neutral foundation
 - 已完成階段：`STAGE-001` Scheduled execution reconciliation core
 - 已完成階段：`STAGE-002` Durable reconciliation delivery
@@ -21,7 +21,7 @@ updated: 2026-08-06
 - 已完成階段：`STAGE-007` fail-closed reconciliation dispatcher readiness
 - 已完成階段：`STAGE-008` fail-closed Hermes context consumer readiness
 - 目前階段：`STAGE-009` Hermes context consumer production artifact readiness（accepted）
-- 目前狀態：repository artifacts維持ACCEPT；2026-08-06受控production rollout完成單筆dispatch後，真實incoming turn在hook前被AGY executable trust-pin mismatch阻擋，queue fail-closed且必要rollback完成；production deployment仍WITHHELD
+- 目前狀態：repository artifacts維持ACCEPT；受控production rollout完成單筆dispatch後因AGY stale trust pin而fail-closed並完成必要rollback。後續獨立AGY-only remediation已驗證官方1.1.10 binary、更新pin並通過代表性Hermes primary-route functional gate；context consumer仍維持rollback，production enablement仍WITHHELD
 - 工作分支：`feat/hermes-production-reconciliation-hook`
 - Foundation commits：`ee4dc13afaf9ebf293dcfea848979b3762687cd8`、`4958b501869050b5bdbec33d299cbafc8cb87116`
 
@@ -37,9 +37,11 @@ updated: 2026-08-06
 - [REVIEW-011](reviews/REVIEW-011-stage-009-hermes-context-consumer-production-artifact-readiness.md)：final High 0 / Medium 0 / Low 2 non-blocking；repository artifact readiness ACCEPT、production WITHHELD。
 - [RUNBOOK-002](runbooks/RUNBOOK-002-hermes-context-consumer-production-approval.md)：artifact欄位已固定，但production仍為NOT AUTHORIZED。
 - [EVID-012](evidence/EVID-012-hermes-context-consumer-production-rollout-attempt.md)：受控deployment、單筆dispatch、AGY prerequisite failure、fail-closed queue與rollback證據。
-- [REVIEW-012](reviews/REVIEW-012-stage-009-production-rollout-attempt-closure.md)：rollback execution/evidence closure ACCEPT；因AGY trust prerequisite仍有open High，overall rollout closure與production context consumer enablement WITHHELD，review狀態`blocked`。
+- [REVIEW-012](reviews/REVIEW-012-stage-009-production-rollout-attempt-closure.md)：rollback execution/evidence與rollout-attempt closure ACCEPT；production context consumer enablement仍WITHHELD，review狀態`accepted`。
+- [EVID-013](evidence/EVID-013-agy-executable-trust-pin-remediation.md)：官方manifest/archive/executable digest chain、隔離version probe、獨立批准的trust-pin更新、transport/identity/main-route functional gates及queue no-mutation read-back。
+- [REVIEW-013](reviews/REVIEW-013-agy-executable-trust-pin-remediation-closure.md)：獨立live service/pin/artifact/SQLite read-back，final High 0 / Medium 0 / Low 0；AGY remediation ACCEPT、rollout-attempt closure ACCEPT (rolled back)、production context consumer enablement WITHHELD。
 - Final production state：context patch/plugin/drop-in/dedicated venv/live delivery DB均已rollback；baseline gateway active且Telegram connected。Source item為`delivered/attempts=1`，matching sink row隔離為`pending/attempts=0`、ambiguous 0，不得自動replay/reset。
-- Open blocker：AGY executable實際SHA-256不符合service trust pin；需獨立驗證binary disposition並另行批准，transport connected不可視為agent functional health。
+- Closed prerequisite：AGY live executable已證實與官方checksum-verified 1.1.10 release byte-identical；effective trust pin已匹配，identity與代表性Hermes main-route functional gate PASS。Transport connected仍不可單獨視為agent functional health。
 
 ## Accepted STAGE-008 Deliverables
 
@@ -132,8 +134,8 @@ updated: 2026-08-06
 
 ## Blockers
 
-- High：Bastet primary provider的AGY executable實際SHA-256與service設定的trust pin不一致，真實incoming turn在`pre_llm_call`前即初始化失敗。不得在context-consumer rollout中更新或繞過pin。
-- `REVIEW-012`維持`blocked`；production context consumer enablement與overall rollout closure均WITHHELD。
+- High：0。原AGY executable trust-pin mismatch已由EVID-013在獨立批准範圍內關閉。
+- Production context consumer enablement仍受新maintenance window、已ack source/quarantined sink逐筆處置與fresh explicit approval約束；這是未滿足的治理gate，不是AGY functional blocker。
 
 ## Current Risks
 
@@ -146,4 +148,4 @@ updated: 2026-08-06
 
 ## Next Gate
 
-先獨立驗證AGY executable來源、版本與digest disposition，並另行批准恢復舊binary或更新trust pin。該prerequisite關閉後，若仍要重試STAGE-009 production enablement，必須建立新的maintenance window、重新決定已ack source與quarantined pending sink的per-item disposition，重跑RUNBOOK-002全部preflight與agent-functional-health gate，並取得新的明確canary/rollback授權。
+AGY prerequisite已關閉。若仍要重試STAGE-009 production enablement，下一個gate是建立新的maintenance window、重新決定已ack source與quarantined pending sink的per-item disposition、重跑RUNBOOK-002全部preflight（包含再次確認AGY identity/main-route functional health），並取得新的明確deployment/canary/rollback授權。不得自動replay、reset或沿用舊批准窗口。

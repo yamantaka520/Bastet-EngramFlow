@@ -78,10 +78,16 @@ related_adrs:
 - Source outbox remains `delivered`, attempts 1. The quarantined delivery row remains `pending`, attempts 0, with no ambiguous state. It must not be replayed or reset without a new per-item decision.
 - AGY trust gate remains failed; transport connectivity therefore must not be represented as end-to-end agent health.
 
+## Subsequent prerequisite remediation
+
+- The statements above describe the final state of this rollout attempt at 09:41 CST.
+- EVID-013 records a later, separately approved AGY-only remediation. It proved the live executable byte-identical to the official checksum-verified 1.1.10 release, updated the stale trust pin and passed a representative Hermes primary-route functional gate.
+- That follow-up closes the external AGY prerequisite but does not replay this canary or change this rollout's rolled-back context-consumer state.
+
 ## Verdict
 
 - Artifact deployment mechanics and one-item dispatch/read-back: PASS.
 - End-to-end exact-target consumer canary: NOT COMPLETED.
 - Necessary rollback: PASS.
 - Production context consumer enablement: WITHHELD.
-- Open blocker: independently validate the replacement AGY executable and approve a new trust pin or restore the previously pinned binary before any new canary authorization.
+- Historical blocker at attempt closure: independently validate the replacement AGY executable and approve a new trust pin or restore the previously pinned binary. This prerequisite was subsequently closed by EVID-013; a new canary still requires fresh authorization and per-item disposition.

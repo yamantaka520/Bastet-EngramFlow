@@ -61,7 +61,7 @@ GOAL → STAGE → PLAN → ADR/SPEC → IMPLEMENTATION → EVIDENCE → REVIEW/
 | GOAL-001 | STAGE-006 | PLAN-007 | 0005 | EVID-008 | accepted |
 | GOAL-001 | STAGE-007 | PLAN-008 | 0004, 0005 | EVID-009 | accepted |
 | GOAL-001 | STAGE-008 | PLAN-009 | 0004, 0005 | EVID-010 | accepted |
-| GOAL-001 | STAGE-009 | PLAN-010 | 0004, 0005 | EVID-011, EVID-012 | artifact readiness accepted; rollout rolled back |
+| GOAL-001 | STAGE-009 | PLAN-010 | 0004, 0005 | EVID-011, EVID-012, EVID-013 | artifact readiness accepted; rollout attempt closed as rolled back; AGY prerequisite remediated; production enablement withheld |
 
 ## 6. 自動化檢查目標
 

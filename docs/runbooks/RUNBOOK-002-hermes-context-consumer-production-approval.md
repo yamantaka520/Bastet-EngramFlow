@@ -18,7 +18,7 @@ Any change in service owner, checkout, HEAD, source patch state or hook contract
 
 ## STAGE-009 verified artifacts (still NOT AUTHORIZED)
 
-- Bastet-EngramFlow source commit before STAGE-009 closure: `389d88fa8f35af7a260dbb795f007c79684aba3f`; final release commit remains pending publication.
+- Bastet-EngramFlow artifact-lineage source commit before STAGE-009 closure: `389d88fa8f35af7a260dbb795f007c79684aba3f`. This is not the later rollout-attempt checkout commit recorded by EVID-012; every future approval must pin the exact deployment commit separately rather than infer it from this lineage field.
 - Reproducible release wheel: `bastet_engramflow-0.1.0.dev0-py3-none-any.whl`, SHA-256 `3791465422639feb80e8a6fd459cb575839029bcf1cad28a871e105379c018d7`, built from an isolated source copy with `SOURCE_DATE_EPOCH=315532800`; two builds were byte-identical and a clean-venv plugin smoke passed.
 - Hermes base commit: `d0c0a6b8fe5ff45bcb3d2ba34e596cca7100ed5a`.
 - Existing post-cron prerequisite patch SHA-256: `af1d421f0b33ee06e14dae9bfca20e4c5490e13c28f78b76dbb9979614cc65dc`; live state verified `applied`.
@@ -65,7 +65,7 @@ The patch must not infer conversation from`sender_id`, fake an incoming message,
 - Verify Hermes HEAD and ensure changed paths equal the previously governed patch allowlist only.
 - Verify the exact `pre_llm_call` contract and agent chat/thread attributes still exist.
 - Verify release artifacts and patch/plugin digests.
-- Verify every configured primary-provider executable trust/version prerequisite before stopping service. For AGY this includes byte-comparing `AGY_CLI_PATH` against the pinned `AGY_CLI_SHA256`; any mismatch is a stop condition and must not be bypassed by updating the pin inside this rollout.
+- Verify every configured primary-provider executable trust/version prerequisite before stopping service. For AGY this includes byte-comparing `AGY_CLI_PATH` against the pinned `AGY_CLI_SHA256`; any mismatch is a stop condition and must not be bypassed by updating the pin inside this rollout. Resolve a stale pin only under a separate approval: sandbox `--version` against a copied binary with an empty HOME/unprivileged identity/network isolation, verify the official platform manifest and release archive SHA-512, require the extracted executable size/SHA-256 to match live bytes, preserve live mtime/hash, then run identity and representative Hermes primary-route functional gates. AGY may self-update during ordinary runs, so a local hash alone is not sufficient trust evidence.
 - Verify delivery filesystem is local and supported; stop on NFS/remote/unknown locking semantics.
 - Run full Bastet gates and source-pinned Hermes compatibility tests in isolated environments.
 - Inspect queue state with a read-only connection; do not let a constructor create or migrate the production DB during preflight.
